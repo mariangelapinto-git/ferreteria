@@ -7,6 +7,15 @@
 		<link rel="stylesheet" href="/style/admin.css" />
 		<link rel="stylesheet" href="/css/bootstrap.min.css" />
 		<title>Panel de Administración - Productos</title>
+		<style>
+			.img-preview {
+				max-width: 100px;
+				max-height: 100px;
+				border: 1px solid #ddd;
+				margin-top: 10px;
+				display: block; /* Para que ocupe su propia línea */
+			}
+		</style>
 	</head>
 	<body>
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -110,7 +119,7 @@
 						></button>
 					</div>
 					<div class="modal-body">
-						<form id="addProductForm">
+						<form id="addProductForm" enctype="multipart/form-data">
 							<div class="mb-3">
 								<label for="nombreProducto" class="form-label"
 									>Nombre del Producto</label
@@ -156,13 +165,21 @@
 								/>
 							</div>
 							<div class="mb-3">
-								<label for="imagenURL" class="form-label"
-									>URL de la Imagen (ej: producto1.jpg)</label
+								<label
+									for="imagenProductoAdd"
+									class="form-label"
+									>Subir Imagen</label
 								>
 								<input
-									type="text"
+									type="file"
 									class="form-control"
-									id="imagenURL"
+									id="imagenProductoAdd"
+									accept="image/*"
+								/>
+								<img
+									id="imgPreviewAdd"
+									class="img-preview"
+									style="display: none"
 								/>
 							</div>
 							<div class="mb-3">
@@ -217,8 +234,12 @@
 						></button>
 					</div>
 					<div class="modal-body">
-						<form id="editProductForm">
+						<form
+							id="editProductForm"
+							enctype="multipart/form-data"
+						>
 							<input type="hidden" id="editIdProducto" />
+							<input type="hidden" id="editCurrentImagenURL" />
 							<div class="mb-3">
 								<label
 									for="editNombreProducto"
@@ -266,14 +287,22 @@
 								/>
 							</div>
 							<div class="mb-3">
-								<label for="editImagenURL" class="form-label"
-									>URL de la Imagen (ej: producto1.jpg)</label
+								<label
+									for="imagenProductoEdit"
+									class="form-label"
+									>Subir Nueva Imagen</label
 								>
 								<input
-									type="text"
+									type="file"
 									class="form-control"
-									id="editImagenURL"
+									id="imagenProductoEdit"
+									accept="image/*"
 								/>
+								<img id="imgPreviewEdit" class="img-preview" />
+								<small class="form-text text-muted"
+									>Si no subes una nueva imagen, se mantendrá
+									la actual.</small
+								>
 							</div>
 							<div class="mb-3">
 								<label for="editUnidad" class="form-label"
@@ -324,6 +353,53 @@
 			const toastBody = liveToast.querySelector(".toast-body");
 			const broadcastUpdateBtn =
 				document.getElementById("broadcastUpdateBtn");
+
+			const imagenProductoAddInput =
+				document.getElementById("imagenProductoAdd");
+			const imgPreviewAdd = document.getElementById("imgPreviewAdd");
+
+			const imagenProductoEditInput =
+				document.getElementById("imagenProductoEdit");
+			const imgPreviewEdit = document.getElementById("imgPreviewEdit");
+
+			// Previsualización de imagen al añadir
+			imagenProductoAddInput.addEventListener("change", function () {
+				if (this.files && this.files[0]) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						imgPreviewAdd.src = e.target.result;
+						imgPreviewAdd.style.display = "block";
+					};
+					reader.readAsDataURL(this.files[0]);
+				} else {
+					imgPreviewAdd.src = "";
+					imgPreviewAdd.style.display = "none";
+				}
+			});
+
+			// Previsualización de imagen al editar
+			imagenProductoEditInput.addEventListener("change", function () {
+				if (this.files && this.files[0]) {
+					const reader = new FileReader();
+					reader.onload = function (e) {
+						imgPreviewEdit.src = e.target.result;
+						imgPreviewEdit.style.display = "block";
+					};
+					reader.readAsDataURL(this.files[0]);
+				} else {
+					// Si se deselecciona un archivo, mostrar la imagen actual del producto
+					const currentImageUrl = document.getElementById(
+						"editCurrentImagenURL"
+					).value;
+					if (currentImageUrl) {
+						imgPreviewEdit.src = `/img/productos/${currentImageUrl}`;
+						imgPreviewEdit.style.display = "block";
+					} else {
+						imgPreviewEdit.src = "";
+						imgPreviewEdit.style.display = "none";
+					}
+				}
+			});
 
 			// Conexión de Socket.IO
 			const socket = io("http://localhost:3000");
@@ -377,8 +453,10 @@
 						const row = productosTableBody.insertRow();
 						row.innerHTML = `
                             <td>${producto.ID_Productos}</td>
-                            <td><img src="/img/productos/${
+                            <td><img src="${
 								producto.ImagenURL
+									? `/img/productos/${producto.ImagenURL}` // Ruta para imágenes subidas
+									: "/img/placeholder.png" // Imagen por defecto si no hay URL
 							}" alt="${
 							producto.NombreProducto
 						}" style="width: 50px; height: 50px; object-fit: cover;"></td>
@@ -430,35 +508,53 @@
 			addProductForm.addEventListener("submit", async (event) => {
 				event.preventDefault();
 
-				const newProduct = {
-					NombreProducto:
-						document.getElementById("nombreProducto").value,
-					Descripcion: document.getElementById("descripcion").value,
-					Precio: parseFloat(document.getElementById("precio").value),
-					Stock: parseInt(document.getElementById("stock").value),
-					ImagenURL: document.getElementById("imagenURL").value,
-					Unidad: document.getElementById("unidad").value,
-					Descuento:
-						parseFloat(
-							document.getElementById("descuento").value
-						) || 0,
-				};
+				const formData = new FormData(); // Usar FormData para enviar archivos
+				formData.append(
+					"NombreProducto",
+					document.getElementById("nombreProducto").value
+				);
+				formData.append(
+					"Descripcion",
+					document.getElementById("descripcion").value
+				);
+				formData.append(
+					"Precio",
+					parseFloat(document.getElementById("precio").value)
+				);
+				formData.append(
+					"Stock",
+					parseInt(document.getElementById("stock").value)
+				);
+				formData.append(
+					"Unidad",
+					document.getElementById("unidad").value
+				);
+				formData.append(
+					"Descuento",
+					parseFloat(document.getElementById("descuento").value) || 0
+				);
+
+				// Si hay un archivo seleccionado, añadirlo al FormData
+				const imagenFile =
+					document.getElementById("imagenProductoAdd").files[0];
+				if (imagenFile) {
+					formData.append("imagenProducto", imagenFile); // 'imagenProducto' debe coincidir con el nombre del campo en multer
+				}
 
 				try {
 					const response = await fetch(API_URL, {
 						method: "POST",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(newProduct),
+						// Headers 'Content-Type': no especificar, FormData lo hace automáticamente
+						body: formData, // Enviar FormData directamente
 					});
 					const result = await response.json();
 					if (response.ok) {
 						showToast("Producto añadido con éxito.");
 						addProductModal.hide();
 						addProductForm.reset(); // Limpiar el formulario
+						imgPreviewAdd.src = ""; // Limpiar previsualización
+						imgPreviewAdd.style.display = "none";
 						// La tabla se actualizará automáticamente por el evento de Socket.IO
-						// ya que el server.js lo emite al guardar
 					} else {
 						showToast(
 							"Error al añadir producto: " +
@@ -494,12 +590,23 @@
 					document.getElementById("editPrecio").value =
 						product.Precio;
 					document.getElementById("editStock").value = product.Stock;
-					document.getElementById("editImagenURL").value =
-						product.ImagenURL;
 					document.getElementById("editUnidad").value =
 						product.Unidad;
 					document.getElementById("editDescuento").value =
 						product.Descuento;
+
+					document.getElementById("editCurrentImagenURL").value =
+						product.ImagenURL || ""; // Guardar la URL actual
+
+					// Mostrar imagen actual
+					if (product.ImagenURL) {
+						imgPreviewEdit.src = `/img/productos/${product.ImagenURL}`;
+						imgPreviewEdit.style.display = "block";
+					} else {
+						imgPreviewEdit.src = "";
+						imgPreviewEdit.style.display = "none";
+					}
+					document.getElementById("imagenProductoEdit").value = ""; // Limpiar el input de archivo para nuevas subidas
 
 					editProductModal.show();
 				} catch (error) {
@@ -518,37 +625,59 @@
 				event.preventDefault();
 
 				const id = document.getElementById("editIdProducto").value;
-				const updatedProduct = {
-					NombreProducto:
-						document.getElementById("editNombreProducto").value,
-					Descripcion:
-						document.getElementById("editDescripcion").value,
-					Precio: parseFloat(
-						document.getElementById("editPrecio").value
-					),
-					Stock: parseInt(document.getElementById("editStock").value),
-					ImagenURL: document.getElementById("editImagenURL").value,
-					Unidad: document.getElementById("editUnidad").value,
-					Descuento:
-						parseFloat(
-							document.getElementById("editDescuento").value
-						) || 0,
-				};
+				const currentImagenURL = document.getElementById(
+					"editCurrentImagenURL"
+				).value;
+
+				const formData = new FormData(); // Usar FormData para enviar archivos
+				formData.append(
+					"NombreProducto",
+					document.getElementById("editNombreProducto").value
+				);
+				formData.append(
+					"Descripcion",
+					document.getElementById("editDescripcion").value
+				);
+				formData.append(
+					"Precio",
+					parseFloat(document.getElementById("editPrecio").value)
+				);
+				formData.append(
+					"Stock",
+					parseInt(document.getElementById("editStock").value)
+				);
+				formData.append(
+					"Unidad",
+					document.getElementById("editUnidad").value
+				);
+				formData.append(
+					"Descuento",
+					parseFloat(
+						document.getElementById("editDescuento").value
+					) || 0
+				);
+
+				// Si hay un archivo seleccionado, añadirlo. Si no, enviar la URL de imagen actual.
+				const imagenFile =
+					document.getElementById("imagenProductoEdit").files[0];
+				if (imagenFile) {
+					formData.append("imagenProducto", imagenFile); // 'imagenProducto' debe coincidir con el nombre del campo en multer
+				} else {
+					// Importante: Si no se sube un nuevo archivo, enviar la URL de imagen existente
+					formData.append("ImagenURL", currentImagenURL);
+				}
 
 				try {
 					const response = await fetch(`${API_URL}/${id}`, {
 						method: "PUT",
-						headers: {
-							"Content-Type": "application/json",
-						},
-						body: JSON.stringify(updatedProduct),
+						// Headers 'Content-Type': no especificar, FormData lo hace automáticamente
+						body: formData, // Enviar FormData directamente
 					});
 					const result = await response.json();
 					if (response.ok) {
 						showToast("Producto actualizado con éxito.");
 						editProductModal.hide();
 						// La tabla se actualizará automáticamente por el evento de Socket.IO
-						// ya que el server.js lo emite al guardar
 					} else {
 						showToast(
 							"Error al actualizar producto: " +
@@ -579,7 +708,6 @@
 						if (response.ok) {
 							showToast("Producto eliminado con éxito.");
 							// La tabla se actualizará automáticamente por el evento de Socket.IO
-							// ya que el server.js lo emite al eliminar
 						} else {
 							showToast(
 								"Error al eliminar producto: " +

@@ -7,6 +7,8 @@ const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
+const multer = require("multer"); // <--- Importar Multer
+const fs = require("fs"); // <--- Importar fs para manejo de archivos
 
 // ===============================================
 // Configuración inicial de Express y Socket.IO
@@ -32,7 +34,45 @@ const io = new Server(server, {
 
 // 2. Middlewares globales
 app.use(cors()); // Habilita CORS para todas las solicitudes HTTP
-app.use(express.json()); // Permite a Express leer JSON en el cuerpo de las solicitudes
+app.use(express.json()); // <--- ¡Importante! Habilitar para parsear cuerpos JSON
+// Multer se usará específicamente en las rutas de productos que manejan FormData.
+
+// ===============================================
+// Configuración de Multer para la subida de imágenes
+// ===============================================
+const uploadsDir = path.join(__dirname, "img", "productos"); // Carpeta donde se guardarán las imágenes
+
+// Asegurarse de que la carpeta de subidas exista
+if (!fs.existsSync(uploadsDir)) {
+	fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, uploadsDir); // Directorio donde se guardarán los archivos
+	},
+	filename: function (req, file, cb) {
+		// Generar un nombre único para el archivo para evitar sobrescrituras
+		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+		const ext = path.extname(file.originalname); // Obtener la extensión original del archivo
+		cb(null, file.fieldname + "-" + uniqueSuffix + ext); // Nombre del archivo: por ejemplo, "imagen-16788888888.jpg"
+	},
+});
+
+// Filtrar tipos de archivos (opcional, pero recomendado)
+const fileFilter = (req, file, cb) => {
+	if (file.mimetype.startsWith("image/")) {
+		cb(null, true);
+	} else {
+		cb(new Error("Solo se permiten archivos de imagen."), false);
+	}
+};
+
+const upload = multer({
+	storage: storage,
+	fileFilter: fileFilter,
+	limits: { fileSize: 5 * 1024 * 1024 }, // Limite de tamaño de archivo (5MB)
+});
 
 // 3. Conexión a la base de datos SQLite
 const DB_PATH = "./Config/productos.db"; // Ruta a tu archivo de base de datos
@@ -50,10 +90,10 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
                 Descripcion TEXT,
                 Precio REAL NOT NULL,
                 Stock INTEGER NOT NULL,
-                ImagenURL TEXT,
-                Categoria TEXT,
+                ImagenURL TEXT,  -- <--- Esta columna almacenará el nombre del archivo de la imagen
                 Descuento REAL DEFAULT 0,
-                FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP
+                FechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+                Unidad TEXT
             )`,
 			(err) => {
 				if (err) {
@@ -119,18 +159,10 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
 //  API de Productos
 // =============================================================================
 
-// Obtener todos los productos o filtrar por categoría
+// Obtener todos los productos
 app.get("/api/productos", (req, res) => {
-	const categoria = req.query.categoria;
-	let sql = "SELECT * FROM Productos";
-	let params = [];
-
-	if (categoria) {
-		sql += " WHERE Categoria = ?";
-		params.push(categoria);
-	}
-
-	db.all(sql, params, (err, rows) => {
+	const sql = "SELECT * FROM Productos";
+	db.all(sql, [], (err, rows) => {
 		if (err) {
 			res.status(500).json({ error: err.message });
 			return;
@@ -160,23 +192,25 @@ app.get("/api/productos/:id", (req, res) => {
 });
 
 // Agregar un nuevo producto (solo para admin)
-app.post("/api/productos", (req, res) => {
-	const {
-		NombreProducto,
-		Descripcion,
-		Precio,
-		Stock,
-		ImagenURL,
-		Categoria,
-		Descuento,
-	} = req.body;
+// Usamos upload.single('imagenProducto') para procesar la subida de un solo archivo
+app.post("/api/productos", upload.single("imagenProducto"), (req, res) => {
+	const { NombreProducto, Descripcion, Precio, Stock, Descuento, Unidad } =
+		req.body;
+	const ImagenURL = req.file ? req.file.filename : null; // Obtener el nombre del archivo subido
+
 	if (!NombreProducto || !Precio || !Stock) {
+		// Si falta algún campo obligatorio y se subió un archivo, eliminarlo para limpiar
+		if (req.file) {
+			fs.unlink(req.file.path, (err) => {
+				if (err) console.error("Error al eliminar archivo:", err);
+			});
+		}
 		return res
 			.status(400)
 			.json({ error: "Nombre, Precio y Stock son obligatorios." });
 	}
 
-	const sql = `INSERT INTO Productos (NombreProducto, Descripcion, Precio, Stock, ImagenURL, Categoria, Descuento) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+	const sql = `INSERT INTO Productos (NombreProducto, Descripcion, Precio, Stock, ImagenURL, Descuento, Unidad) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 	db.run(
 		sql,
 		[
@@ -184,12 +218,22 @@ app.post("/api/productos", (req, res) => {
 			Descripcion,
 			Precio,
 			Stock,
-			ImagenURL,
-			Categoria,
+			ImagenURL, // Usar el nombre del archivo generado por Multer
 			Descuento || 0,
+			Unidad || null,
 		],
 		function (err) {
 			if (err) {
+				// Si hay un error en la DB, eliminar el archivo subido
+				if (req.file) {
+					fs.unlink(req.file.path, (err) => {
+						if (err)
+							console.error(
+								"Error al eliminar archivo después de error DB:",
+								err
+							);
+					});
+				}
 				res.status(500).json({ error: err.message });
 				return;
 			}
@@ -197,32 +241,28 @@ app.post("/api/productos", (req, res) => {
 			res.status(201).json({
 				message: "Producto agregado con éxito",
 				id: this.lastID,
+				ImagenURL: ImagenURL, // Devolver el nombre del archivo para confirmación
 			});
 		}
 	);
 });
 
 // Actualizar un producto existente (solo para admin)
-app.put("/api/productos/:id", (req, res) => {
+// upload.single('imagenProducto') también para la actualización
+app.put("/api/productos/:id", upload.single("imagenProducto"), (req, res) => {
 	const { id } = req.params;
-	const {
-		NombreProducto,
-		Descripcion,
-		Precio,
-		Stock,
-		ImagenURL,
-		Categoria,
-		Descuento,
-	} = req.body;
+	const { NombreProducto, Descripcion, Precio, Stock, Descuento, Unidad } =
+		req.body;
+	let ImagenURL = req.file ? req.file.filename : req.body.ImagenURL; // Si se sube nuevo archivo, usarlo; de lo contrario, usar el existente
 
-	const sql = `UPDATE Productos SET 
+	const sql = `UPDATE Productos SET
                  NombreProducto = COALESCE(?, NombreProducto),
                  Descripcion = COALESCE(?, Descripcion),
                  Precio = COALESCE(?, Precio),
                  Stock = COALESCE(?, Stock),
-                 ImagenURL = COALESCE(?, ImagenURL),
-                 Categoria = COALESCE(?, Categoria),
-                 Descuento = COALESCE(?, Descuento)
+                 ImagenURL = COALESCE(?, ImagenURL), -- Actualizar la URL de la imagen
+                 Descuento = COALESCE(?, Descuento),
+                 Unidad = COALESCE(?, Unidad)
                  WHERE ID_Productos = ?`;
 
 	db.run(
@@ -232,24 +272,52 @@ app.put("/api/productos/:id", (req, res) => {
 			Descripcion,
 			Precio,
 			Stock,
-			ImagenURL,
-			Categoria,
+			ImagenURL, // Usar la nueva URL de la imagen o la existente
 			Descuento,
+			Unidad,
 			id,
 		],
 		function (err) {
 			if (err) {
+				// Si hay un error en la DB, eliminar el archivo subido (si hubo uno)
+				if (req.file) {
+					fs.unlink(req.file.path, (err) => {
+						if (err)
+							console.error(
+								"Error al eliminar archivo después de error DB:",
+								err
+							);
+					});
+				}
 				res.status(500).json({ error: err.message });
 				return;
 			}
 			if (this.changes === 0) {
+				// Si no se encontró el producto o no hubo cambios, eliminar el archivo subido
+				if (req.file) {
+					fs.unlink(req.file.path, (err) => {
+						if (err)
+							console.error(
+								"Error al eliminar archivo (producto no encontrado/sin cambios):",
+								err
+							);
+					});
+				}
 				res.status(404).json({
 					message: "Producto no encontrado o sin cambios.",
 				});
 				return;
 			}
+			// Si la actualización fue exitosa y se subió una nueva imagen,
+			// podrías querer eliminar la imagen antigua de la carpeta 'productos'
+			// Para hacer esto, necesitarías obtener la ImagenURL antigua antes de la actualización.
+			// Por simplicidad, no lo implementamos aquí, pero es una consideración para producción.
+
 			io.emit("productosActualizados");
-			res.json({ message: "Producto actualizado con éxito" });
+			res.json({
+				message: "Producto actualizado con éxito",
+				ImagenURL: ImagenURL,
+			});
 		}
 	);
 });
@@ -257,30 +325,55 @@ app.put("/api/productos/:id", (req, res) => {
 // Eliminar un producto (solo para admin)
 app.delete("/api/productos/:id", (req, res) => {
 	const { id } = req.params;
-	db.run(
-		"DELETE FROM Productos WHERE ID_Productos = ?",
+
+	// Opcional: Obtener la ImagenURL antes de eliminar el producto para poder eliminar el archivo físico
+	db.get(
+		"SELECT ImagenURL FROM Productos WHERE ID_Productos = ?",
 		[id],
-		function (err) {
+		(err, row) => {
 			if (err) {
-				res.status(500).json({ error: err.message });
-				return;
+				return res.status(500).json({ error: err.message });
 			}
-			if (this.changes === 0) {
-				res.status(404).json({ message: "Producto no encontrado." });
-				return;
+			if (row && row.ImagenURL) {
+				const imagePath = path.join(uploadsDir, row.ImagenURL);
+				fs.unlink(imagePath, (err) => {
+					if (err)
+						console.error(
+							"Error al eliminar archivo de imagen:",
+							err
+						);
+				});
 			}
-			io.emit("productosActualizados");
-			res.json({ message: "Producto eliminado con éxito" });
+
+			db.run(
+				"DELETE FROM Productos WHERE ID_Productos = ?",
+				[id],
+				function (err) {
+					if (err) {
+						res.status(500).json({ error: err.message });
+						return;
+					}
+					if (this.changes === 0) {
+						res.status(404).json({
+							message: "Producto no encontrado.",
+						});
+						return;
+					}
+					io.emit("productosActualizados");
+					res.json({ message: "Producto eliminado con éxito" });
+				}
+			);
 		}
 	);
 });
 
 // =============================================================================
-//  API de Órdenes y Compras (NUEVAS RUTAS)
+//  API de Órdenes y Compras
 // =============================================================================
 
 // Ruta para finalizar una compra (procesar el carrito)
 app.post("/api/compras", async (req, res) => {
+	// express.json() ya parsea el body para esta ruta
 	const { productosComprados, totalCompra, metodoPago } = req.body;
 
 	if (
@@ -495,8 +588,10 @@ app.get("/api/ordenes/:id", (req, res) => {
 // =============================================================================
 //  Sirve archivos estáticos (HTML, CSS, JS, imágenes)
 // =============================================================================
+// Servir imágenes desde el directorio 'img/productos'
+app.use("/img/productos", express.static(uploadsDir)); // <--- Nueva ruta para servir las imágenes subidas
 app.use(express.static(path.join(__dirname)));
-app.use("/img", express.static(path.join(__dirname, "img")));
+app.use("/img", express.static(path.join(__dirname, "img"))); // Para otras imágenes que no sean de productos
 
 // 6. Iniciar el servidor (al final)
 server.listen(PORT, () => {

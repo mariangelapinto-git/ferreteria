@@ -36,39 +36,31 @@
 			.table-striped > tbody > tr:nth-of-type(even) > * {
 				--bs-table-bg-type: var(--secondary-bg); /* Para filas pares */
 			}
-			.order-detail-list {
-				list-style: none;
-				padding: 0;
-				margin: 0;
+			.order-detail-btn {
+				background-color: var(--accent-color);
+				color: #fff;
+				border: none;
+				padding: 8px 12px;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
 			}
-			.order-detail-list li {
-				margin-bottom: 5px;
-				font-size: 0.9em;
+			.order-detail-btn:hover {
+				background-color: #0056b3; /* Un tono más oscuro */
 			}
-			.order-detail-list li img {
-				width: 30px;
-				height: 30px;
-				object-fit: cover;
-				border-radius: 3px;
-				margin-right: 5px;
-				vertical-align: middle;
+			.modal-header {
+				background-color: var(--accent-color);
+				color: #fff;
+				border-bottom: 1px solid #dee2e6;
 			}
-			.status-badge {
-				padding: 0.4em 0.8em;
-				border-radius: 0.25rem;
-				font-weight: bold;
-			}
-			.status-Pendiente {
-				background-color: #ffc107; /* Amarillo */
-				color: #343a40;
-			}
-			.status-Completada {
-				background-color: #28a745; /* Verde */
+			.modal-title {
 				color: #fff;
 			}
-			.status-Cancelada {
-				background-color: #dc3545; /* Rojo */
-				color: #fff;
+			.modal-body {
+				color: var(--text-color-dark);
+			}
+			.modal-footer {
+				border-top: 1px solid #dee2e6;
 			}
 		</style>
 	</head>
@@ -93,62 +85,141 @@
 			</div>
 			<div class="navbar navbar-dark bg-dark shadow-sm">
 				<div class="container">
-					<a href="#" class="navbar-brand d-flex align-items-center">
+					<a
+						href="/productos.html"
+						class="navbar-brand d-flex align-items-center"
+					>
 						<img
 							src="./img/martillo-y-llave.png"
 							alt="Logo Ferretería"
 							width="30"
-							height="24"
+							height="30"
 							class="me-2"
 						/>
-						<strong>Ferretería "La Herramienta Perfecta"</strong>
+						<strong>Administracion</strong>
 					</a>
-					<ul class="navbar-nav d-flex flex-row me-auto">
-						<li class="nav-item">
-							<a class="nav-link" href="/admin.html"
-								>Administracion</a
-							>
-						</li>
-					</ul>
-					<button
-						class="navbar-toggler"
-						type="button"
-						data-bs-toggle="collapse"
-						data-bs-target="#navbarHeader"
-						aria-controls="navbarHeader"
-						aria-expanded="false"
-						aria-label="Toggle navigation"
-					>
-						<span class="navbar-toggler-icon"></span>
-					</button>
+					<div class="d-flex align-items-center">
+						<a
+							href="/productos.html"
+							class="btn btn-outline-light me-2"
+							aria-label="Ir a la Tienda"
+							>🏪 Tienda</a
+						>
+						<button
+							class="navbar-toggler"
+							type="button"
+							data-bs-toggle="collapse"
+							data-bs-target="#navbarHeader"
+							aria-controls="navbarHeader"
+							aria-expanded="false"
+							aria-label="Toggle navigation"
+						>
+							<span class="navbar-toggler-icon"></span>
+						</button>
+					</div>
 				</div>
 			</div>
 		</header>
 
-		<main class="container my-5">
-			<h2 class="mb-4 text-center text-primary">Mis Órdenes de Compra</h2>
+		<main>
+			<section class="py-5 text-center container">
+				<div class="row py-lg-5">
+					<div class="col-lg-8 col-md-10 mx-auto">
+						<h1 class="fw-light">Compras Realizadas</h1>
+						<p class="lead text-body-secondary">
+							Aquí puedes ver el historial de todas las compras
+							realizadas en nuestra ferretería.
+						</p>
+					</div>
+				</div>
+			</section>
 
-			<div id="ordenes-container" class="table-responsive">
-				<table class="table table-striped table-hover table-ordenes">
-					<thead>
-						<tr>
-							<th>ID Orden</th>
-							<th>Fecha</th>
-							<th>Total</th>
-							<th>Método Pago</th>
-							<th>Estado</th>
-							<th>Productos</th>
-							<th>Acciones</th>
-						</tr>
-					</thead>
-					<tbody id="ordenes-table-body"></tbody>
-				</table>
-				<p
-					id="no-ordenes-message"
-					class="text-center text-muted d-none"
-				>
-					No has realizado ninguna compra aún.
-				</p>
+			<div class="album py-5 bg-body-tertiary">
+				<div class="container my-5 p-4 rounded">
+					<h2 class="mb-4 text-primary">Historial de Órdenes</h2>
+					<div class="table-responsive">
+						<table
+							class="table table-striped table-hover table-ordenes"
+						>
+							<thead>
+								<tr>
+									<th scope="col">ID Orden</th>
+									<th scope="col">Fecha</th>
+									<th scope="col">Total</th>
+									<th scope="col">Método Pago</th>
+									<th scope="col">Estado</th>
+									<th scope="col">Acciones</th>
+								</tr>
+							</thead>
+							<tbody id="ordenes-table-body">
+								<tr>
+									<td colspan="6" class="text-center">
+										Cargando órdenes...
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div
+				class="modal fade"
+				id="ordenDetailsModal"
+				tabindex="-1"
+				aria-labelledby="ordenDetailsModalLabel"
+				aria-hidden="true"
+			>
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="ordenDetailsModalLabel">
+								Detalles de la Orden #<span id="modalOrderId"
+									>...</span
+								>
+							</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"
+							></button>
+						</div>
+						<div class="modal-body">
+							<p>
+								<strong>Fecha:</strong>
+								<span id="modalOrderDate"></span>
+							</p>
+							<p>
+								<strong>Total:</strong> $<span
+									id="modalOrderTotal"
+								></span>
+							</p>
+							<p>
+								<strong>Método de Pago:</strong>
+								<span id="modalOrderPayment"></span>
+							</p>
+							<p>
+								<strong>Estado:</strong>
+								<span id="modalOrderStatus"></span>
+							</p>
+							<h6>Productos:</h6>
+							<ul
+								class="list-group"
+								id="modalOrdenProductos"
+							></ul>
+						</div>
+						<div class="modal-footer">
+							<button
+								type="button"
+								class="btn btn-secondary"
+								data-bs-dismiss="modal"
+							>
+								Cerrar
+							</button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</main>
 
@@ -157,161 +228,102 @@
 				<p class="float-end mb-1">
 					<a href="#">Volver arriba</a>
 				</p>
-				<p class="mb-1">
-					&copy; 2025 Ferretería "La Herramienta Perfecta". Todos los
-					derechos reservados.
-				</p>
+
+				<p class="mb-0">© 2023 Todos los derechos reservados.</p>
 			</div>
 		</footer>
 
-		<div
-			class="modal fade"
-			id="ordenDetailsModal"
-			tabindex="-1"
-			aria-labelledby="ordenDetailsModalLabel"
-			aria-hidden="true"
-		>
-			<div class="modal-dialog modal-dialog-centered modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="ordenDetailsModalLabel">
-							Detalles de la Orden
-							<span id="modal-orden-id"></span>
-						</h5>
-						<button
-							type="button"
-							class="btn-close"
-							data-bs-dismiss="modal"
-							aria-label="Close"
-						></button>
-					</div>
-					<div class="modal-body">
-						<p>
-							<strong>Fecha:</strong>
-							<span id="modal-orden-fecha"></span>
-						</p>
-						<p>
-							<strong>Total:</strong>
-							<span id="modal-orden-total"></span>
-						</p>
-						<p>
-							<strong>Método de Pago:</strong>
-							<span id="modal-orden-metodo-pago"></span>
-						</p>
-						<p>
-							<strong>Estado:</strong>
-							<span
-								id="modal-orden-estado"
-								class="status-badge"
-							></span>
-						</p>
-
-						<h6 class="mt-4">Productos en esta Orden:</h6>
-						<ul id="modal-orden-productos" class="list-group"></ul>
-					</div>
-					<div class="modal-footer">
-						<button
-							type="button"
-							class="btn btn-secondary"
-							data-bs-dismiss="modal"
-						>
-							Cerrar
-						</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<script src="./js/bootstrap.bundle.min.js"></script>
-		<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+		<script src="/js/socket.io.min.js"></script>
 		<script>
 			const API_ORDENES_URL = "http://localhost:3000/api/ordenes";
 			const ordenesTableBody =
 				document.getElementById("ordenes-table-body");
-			const noOrdenesMessage =
-				document.getElementById("no-ordenes-message");
 
-			// Modal elements
+			// Elementos del modal
 			const ordenDetailsModal = new bootstrap.Modal(
 				document.getElementById("ordenDetailsModal")
 			);
-			const modalOrdenId = document.getElementById("modal-orden-id");
-			const modalOrdenFecha =
-				document.getElementById("modal-orden-fecha");
-			const modalOrdenTotal =
-				document.getElementById("modal-orden-total");
-			const modalOrdenMetodoPago = document.getElementById(
-				"modal-orden-metodo-pago"
-			);
-			const modalOrdenEstado =
-				document.getElementById("modal-orden-estado");
+			const modalOrderId = document.getElementById("modalOrderId");
+			const modalOrderDate = document.getElementById("modalOrderDate");
+			const modalOrderTotal = document.getElementById("modalOrderTotal");
+			const modalOrderPayment =
+				document.getElementById("modalOrderPayment");
+			const modalOrderStatus =
+				document.getElementById("modalOrderStatus");
 			const modalOrdenProductos = document.getElementById(
-				"modal-orden-productos"
+				"modalOrdenProductos"
 			);
 
-			// Socket.IO
+			// Conexión de Socket.IO
 			const socket = io("http://localhost:3000");
 
 			socket.on("connect", () => {
+				console.log("Conectado al servidor Socket.IO desde compras");
+			});
+
+			socket.on("disconnect", () => {
 				console.log(
-					"Conectado al servidor Socket.IO desde compras.html"
+					"Desconectado del servidor Socket.IO desde compras"
 				);
 			});
 
+			// Escuchar el evento del servidor para recargar órdenes
 			socket.on("recargarOrdenes", () => {
 				console.log(
 					"Evento 'recargarOrdenes' recibido. Recargando órdenes..."
 				);
-				cargarOrdenes();
+				cargarOrdenes(); // Recargar la lista de órdenes
 			});
 
 			async function cargarOrdenes() {
+				ordenesTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">Cargando órdenes...</td>
+                    </tr>
+                `;
 				try {
 					const response = await fetch(API_ORDENES_URL);
+					if (!response.ok) {
+						throw new Error(
+							`HTTP error! status: ${response.status}`
+						);
+					}
 					const ordenes = await response.json();
 					displayOrdenes(ordenes);
 				} catch (error) {
 					console.error("Error al cargar las órdenes:", error);
-					ordenesTableBody.innerHTML = "";
-					noOrdenesMessage.classList.remove("d-none");
+					ordenesTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-danger">
+                                Error al cargar las órdenes. Por favor, intente de nuevo más tarde.
+                            </td>
+                        </tr>
+                    `;
 				}
 			}
 
 			function displayOrdenes(ordenes) {
-				ordenesTableBody.innerHTML = ""; // Limpiar la tabla
-
+				ordenesTableBody.innerHTML = ""; // Limpiar órdenes existentes
 				if (ordenes.length === 0) {
-					noOrdenesMessage.classList.remove("d-none");
+					ordenesTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center">No hay compras realizadas aún.</td>
+                        </tr>
+                    `;
 					return;
-				} else {
-					noOrdenesMessage.classList.add("d-none");
 				}
 
 				ordenes.forEach((orden) => {
 					const row = document.createElement("tr");
-
-					const fecha = new Date(orden.FechaOrden).toLocaleString();
-					const productosDetalle = orden.ProductosDetalle
-						? orden.ProductosDetalle.split(" || ")
-								.map((item) => `<li>${item}</li>`)
-								.join("")
-						: "<li>N/A</li>";
-
 					row.innerHTML = `
                         <td>${orden.ID_Orden}</td>
-                        <td>${fecha}</td>
+                        <td>${new Date(orden.FechaOrden).toLocaleString()}</td>
                         <td>$${orden.Total.toFixed(2)}</td>
                         <td>${orden.MetodoPago || "N/A"}</td>
-                        <td><span class="status-badge status-${orden.Estado}">${
-						orden.Estado
-					}</span></td>
+                        <td>${orden.Estado}</td>
                         <td>
-                            <ul class="order-detail-list">
-                                ${productosDetalle}
-                            </ul>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm view-details-btn" data-id="${
+                            <button class="btn btn-info btn-sm order-detail-btn" data-id="${
 								orden.ID_Orden
 							}">Ver Detalles</button>
                         </td>
@@ -319,48 +331,53 @@
 					ordenesTableBody.appendChild(row);
 				});
 
-				// Añadir event listeners para los botones "Ver Detalles"
 				document
-					.querySelectorAll(".view-details-btn")
+					.querySelectorAll(".order-detail-btn")
 					.forEach((button) => {
 						button.addEventListener("click", (event) => {
-							const ordenId = event.target.dataset.id;
-							showOrdenDetails(ordenId);
+							const orderId = parseInt(event.target.dataset.id);
+							cargarDetallesOrden(orderId);
 						});
 					});
 			}
 
-			async function showOrdenDetails(id) {
+			async function cargarDetallesOrden(orderId) {
 				try {
-					const response = await fetch(`${API_ORDENES_URL}/${id}`);
+					const response = await fetch(
+						`${API_ORDENES_URL}/${orderId}`
+					);
+					if (!response.ok) {
+						throw new Error(
+							`HTTP error! status: ${response.status}`
+						);
+					}
 					const orden = await response.json();
 
-					modalOrdenId.textContent = orden.ID_Orden;
-					modalOrdenFecha.textContent = new Date(
+					modalOrderId.textContent = orden.ID_Orden;
+					modalOrderDate.textContent = new Date(
 						orden.FechaOrden
 					).toLocaleString();
-					modalOrdenTotal.textContent = `$${orden.Total.toFixed(2)}`;
-					modalOrdenMetodoPago.textContent =
-						orden.MetodoPago || "N/A";
-					modalOrdenEstado.textContent = orden.Estado;
-					modalOrdenEstado.className = `status-badge status-${orden.Estado}`; // Actualiza la clase para el estilo
+					modalOrderTotal.textContent = orden.Total.toFixed(2);
+					modalOrderPayment.textContent = orden.MetodoPago || "N/A";
+					modalOrderStatus.textContent = orden.Estado;
 
-					modalOrdenProductos.innerHTML = ""; // Limpiar lista de productos
+					modalOrdenProductos.innerHTML = ""; // Limpiar productos anteriores
 					if (orden.productos && orden.productos.length > 0) {
 						orden.productos.forEach((p) => {
 							const listItem = document.createElement("li");
 							listItem.className =
 								"list-group-item d-flex align-items-center";
-							listItem.style.backgroundColor =
-								"var(--secondary-bg)"; // Mantener el estilo oscuro
-							listItem.style.color = "var(--text-color-dark)";
 
 							const precioCalculado =
 								p.PrecioUnitario *
 								(1 - p.DescuentoAplicado / 100);
 
 							listItem.innerHTML = `
-                                <img src="${p.ImagenURL}" alt="${
+                                <img src="${
+									p.ImagenURL
+										? `/img/productos/${p.ImagenURL}`
+										: "/img/placeholder.png"
+								}" alt="${
 								p.NombreProducto
 							}" class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
                                 <div>
@@ -372,7 +389,7 @@
 									)}
                                     ${
 										p.DescuentoAplicado > 0
-											? `<span class="badge bg-success ms-2">${p.DescuentoAplicado}% OFF</span>`
+											? `<span class="badge bg-success ms-2">-${p.DescuentoAplicado}% OFF</span>`
 											: ""
 									}
                                     <br>
