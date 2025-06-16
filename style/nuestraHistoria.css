@@ -1,0 +1,368 @@
+/* --- Base Styles & Resets --- */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box; /* Fundamental para que padding y border no aumenten el tamaño final del elemento */
+}
+
+body {
+	max-width: 1200px; /* Aumenta el ancho máximo para pantallas grandes si lo deseas, o mantenlo en 1100px */
+	margin: 0 auto; /* Centra el body en la página */
+	margin-bottom: 2rem; /* Usa rem para el espaciado vertical */
+	background-color: #fff;
+	color: #333; /* Color de texto más estándar para el body */
+	font-weight: 300;
+	font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+	user-select: none; /* Previene la selección de texto, a menudo se usa para interfaces interactivas */
+	line-height: 1.6; /* Mejora la legibilidad del texto */
+	overflow-x: hidden; /* Evita el scroll horizontal no deseado */
+}
+
+img {
+	max-width: 100%; /* Las imágenes no desbordarán su contenedor */
+	height: auto; /* Mantiene la proporción de la imagen */
+	display: block; /* Elimina espacio extra debajo de las imágenes */
+	border-radius: 10px; /* Mantiene tus bordes redondeados */
+}
+
+/* --- Header Section (Back Link) --- */
+.page-header {
+	padding: 1.5rem 1rem 0; /* Espaciado arriba y a los lados */
+}
+
+.back-link {
+	display: inline-block; /* Permite que el margen funcione correctamente */
+}
+
+.back-icon {
+	width: 25px;
+	height: 25px;
+	cursor: pointer;
+	transition: transform 0.2s ease-in-out; /* Suaviza la animación */
+}
+
+.back-icon:hover {
+	transform: scale(1.1); /* Ligeramente más grande al pasar el ratón */
+}
+
+/* --- Main Content Layout --- */
+.main-content {
+	display: flex; /* Usa Flexbox para el layout principal */
+	gap: 2rem; /* Espacio entre la galería y la descripción */
+	margin-top: 3rem; /* Espacio superior */
+	padding: 0 1rem; /* Padding horizontal para el contenido principal */
+	flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+	justify-content: center; /* Centra los elementos cuando se envuelven */
+	align-items: flex-start; /* Alinea los elementos al inicio verticalmente */
+}
+
+/* --- Gallery Section --- */
+.gallery-section {
+	flex: 2; /* Le da más espacio a la galería, por ejemplo, 2/3 del ancho disponible */
+	min-width: 300px; /* Asegura que no se haga demasiado pequeña */
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-right: 1rem; /* Espacio a la derecha antes de la descripción */
+}
+
+.gallery-section h2 {
+	color: #000; /* Color para el título de la galería */
+	text-align: center;
+	margin-bottom: 1rem;
+	font-size: clamp(1.8rem, 3.5vw, 2.5rem); /* Tamaño adaptable para el h2 */
+}
+
+.main-image-display img {
+	border: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil */
+	transition: outline 0.3s ease, transform 0.3s ease; /* Transición para outline y transform */
+}
+
+.main-image-display a:hover img {
+	outline: 3px solid #010101; /* Destaca al pasar el ratón */
+	transform: scale(1.02); /* Ligeramente más grande */
+}
+
+.thumbnail-grid {
+	display: grid;
+	grid-template-columns: repeat(
+		auto-fit,
+		minmax(100px, 1fr)
+	); /* Columnas automáticas, mínimo 100px */
+	gap: 0.8rem; /* Espacio entre miniaturas */
+}
+
+.thumbnail-grid img {
+	outline: 1px solid rgba(0, 0, 0, 0.1); /* Borde sutil para las miniaturas */
+	object-fit: cover;
+	aspect-ratio: 16 / 9; /* Mantiene una proporción 16:9 para las miniaturas */
+	transition: outline 0.3s ease, transform 0.3s ease;
+}
+
+.thumbnail-grid a:hover img {
+	outline: 3px solid #020202;
+	transform: scale(1.05); /* Más grande al pasar el ratón */
+}
+
+/* Efecto de 'no hover' para miniaturas (ajustado para la nueva estructura) */
+.thumbnail-grid:hover img:not(:hover) {
+	transform: scale(0.95);
+	opacity: 0.7;
+}
+
+/* Eliminamos .item1, .item2, .item3 ya que la rejilla los maneja */
+/* Tus clases .item1, .item2, .item3 con margin-top fijo ya no son necesarias con Grid */
+
+/* --- Description Section --- */
+.about-us-section {
+	flex: 1; /* Le da 1/3 del ancho a la descripción */
+	min-width: 300px; /* Asegura que no se haga demasiado pequeña */
+	padding: 1rem;
+	background-color: #f8f8f8; /* Un fondo claro para la caja de texto */
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.about-us-section h1 {
+	color: #fff; /* Color del texto h1 en la caja de descripción */
+	background-color: #000;
+	padding: 1rem;
+	border-radius: 5px;
+	text-align: center;
+	margin-bottom: 2rem; /* Espacio después del título */
+	font-size: clamp(1.8rem, 3.5vw, 2.8rem); /* Tamaño adaptable para el h1 */
+}
+
+.about-us-section p {
+	font-weight: 300;
+	color: #020202; /* Color de texto del párrafo */
+	font-size: clamp(
+		0.9rem,
+		1.8vw,
+		1rem
+	); /* Tamaño adaptable para el párrafo */
+
+	column-count: 2; /* Mantén las columnas para PC */
+	column-gap: 3rem; /* Espacio entre columnas */
+	column-rule: 1px solid #ddd; /* Línea divisoria */
+}
+
+/* --- Popups --- */
+.popup-overlay {
+	width: 100%;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: rgba(3, 3, 3, 0.8); /* Fondo más oscuro y consistente */
+	z-index: 1000; /* Asegura que esté por encima de todo */
+
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease; /* Suaviza la aparición/desaparición */
+	display: flex; /* Centra el contenido del popup */
+	justify-content: center;
+	align-items: center;
+}
+
+.popup-overlay:target {
+	opacity: 1;
+	visibility: visible;
+}
+
+.popup-content {
+	position: relative; /* Para posicionar el botón de cerrar */
+	background-color: #fff; /* Fondo del contenido del popup */
+	padding: 1rem;
+	border-radius: 8px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	max-width: 70vw; /* Ancho máximo del popup, relativo al viewport */
+	max-height: 80vh; /* Altura máxima del popup */
+	overflow: hidden; /* Evita que la imagen se desborde */
+
+	transform: scale(0.8); /* Inicia un poco más pequeño */
+	transition: transform 0.3s ease;
+}
+
+.popup-overlay:target .popup-content {
+	transform: scale(1); /* Escala a tamaño normal al abrir */
+}
+
+.popup-image {
+	width: 100%;
+	height: auto; /* Ajusta la altura automáticamente para mantener proporción */
+	max-height: 75vh; /* Asegura que la imagen no sea demasiado alta */
+	object-fit: contain; /* Ajusta la imagen dentro del contenedor sin recortar */
+	border-radius: 5px;
+}
+
+.popup-close {
+	text-decoration: none;
+	color: #fff; /* Color blanco para el "x" */
+	font-size: 2rem; /* Tamaño más grande para el "x" */
+	position: absolute;
+	top: 0.5rem; /* Posición más cerca de la esquina */
+	right: 1rem;
+	line-height: 1;
+	transition: all 0.3s;
+	z-index: 1010; /* Asegura que esté por encima de la imagen */
+}
+
+.popup-close:hover {
+	color: #ccc;
+	transform: scale(1.1);
+}
+
+/* --- Accesibilidad (para el sr-only) --- */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* ========================================= */
+/* --- Media Queries for Responsiveness --- */
+/* ========================================= */
+
+/* Tabletas y Laptops Pequeñas (hasta 1024px) */
+@media (max-width: 1024px) {
+	body {
+		margin-bottom: 1.5rem;
+	}
+
+	.main-content {
+		flex-direction: column; /* Apila la galería y la descripción */
+		align-items: center; /* Centra los elementos apilados */
+		padding: 0 1.5rem;
+		margin-top: 2rem;
+	}
+
+	.gallery-section,
+	.about-us-section {
+		flex: none; /* Elimina la proporción flexible */
+		width: 100%; /* Ocupa todo el ancho disponible */
+		max-width: 700px; /* Limita el ancho en tabletas */
+		padding-right: 0; /* Elimina el padding derecho */
+	}
+
+	.gallery-section h2 {
+		font-size: 2.2rem;
+	}
+
+	.about-us-section h1 {
+		font-size: 2.2rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.about-us-section p {
+		column-count: 1; /* Párrafo en una sola columna en tabletas */
+		column-gap: 0;
+		column-rule: none;
+		font-size: 1rem;
+	}
+
+	.thumbnail-grid {
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(80px, 1fr)
+		); /* Miniaturas un poco más pequeñas */
+		gap: 0.6rem;
+	}
+
+	.popup-content {
+		max-width: 85vw; /* Más ancho en tabletas */
+		max-height: 80vh;
+	}
+}
+
+/* Móviles (hasta 768px) */
+@media (max-width: 768px) {
+	body {
+		margin-bottom: 1rem;
+	}
+
+	.page-header {
+		padding: 1rem 0.8rem 0;
+	}
+
+	.main-content {
+		gap: 1.5rem;
+		margin-top: 1.5rem;
+		padding: 0 1rem;
+	}
+
+	.gallery-section,
+	.about-us-section {
+		max-width: 100%; /* Ocupa todo el ancho en móviles */
+	}
+
+	.gallery-section h2 {
+		font-size: 1.8rem;
+	}
+
+	.about-us-section h1 {
+		padding: 0.8rem;
+		margin-bottom: 1rem;
+		font-size: 1.8rem;
+	}
+
+	.about-us-section p {
+		font-size: 0.95rem;
+	}
+
+	.thumbnail-grid {
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(70px, 1fr)
+		); /* Miniaturas más pequeñas */
+		gap: 0.5rem;
+	}
+
+	.popup-content {
+		max-width: 95vw; /* Casi ancho completo en móviles */
+		max-height: 90vh;
+		padding: 0.5rem;
+	}
+
+	.popup-close {
+		font-size: 1.8rem;
+		top: 0.2rem;
+		right: 0.8rem;
+	}
+}
+
+/* Móviles pequeños (hasta 480px) */
+@media (max-width: 480px) {
+	.main-content {
+		gap: 1rem;
+		margin-top: 1rem;
+		padding: 0 0.8rem;
+	}
+
+	.gallery-section h2 {
+		font-size: 1.5rem;
+	}
+
+	.about-us-section h1 {
+		font-size: 1.5rem;
+		padding: 0.6rem;
+	}
+
+	.about-us-section p {
+		font-size: 0.9rem;
+	}
+
+	.thumbnail-grid {
+		grid-template-columns: repeat(
+			auto-fit,
+			minmax(60px, 1fr)
+		); /* Miniaturas aún más pequeñas */
+		gap: 0.4rem;
+	}
+}

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" href="/img/martillo-y-llave.png" />
+		<link rel="stylesheet" href="/style/nuestraHistoria.css" />
+		<title>Quiénes Somos | Ferretería</title>
+	</head>
+	<body>
+		<header class="page-header">
+			<a
+				href="/paginaPrincipal.html"
+				class="back-link"
+				aria-label="Volver a la página principal"
+			>
+				<img
+					title="Volver a la página principal"
+					class="back-icon"
+					src="/img/hacia-atras.png"
+					alt="Flecha hacia atrás"
+				/>
+			</a>
+		</header>
+
+		<main class="main-content">
+			<section class="gallery-section" id="gallery-container">
+				<h2>Nuestros Productos</h2>
+				<div class="main-image-display">
+					<a
+						href="#popup-big-img"
+						aria-label="Ver imagen grande de nuestro trabajo 1"
+					>
+						<img
+							src="/img/imagen-1.jpg"
+							alt="Vista general de una construcción en Venezuela"
+						/>
+					</a>
+				</div>
+
+				<div class="thumbnail-grid">
+					<a
+						href="#popup-small-img-1"
+						aria-label="Ver imagen de detalle 1"
+					>
+						<img
+							class="thumbnail-item"
+							src="/img/imagen-2.jpg"
+							alt="Herramientas de ferretería en un taller"
+						/>
+					</a>
+					<a
+						href="#popup-small-img-2"
+						aria-label="Ver imagen de detalle 2"
+					>
+						<img
+							class="thumbnail-item"
+							src="/img/imagen-3.jpg"
+							alt="Obra en construcción con materiales modernos"
+						/>
+					</a>
+					<a
+						href="#popup-small-img-3"
+						aria-label="Ver imagen de detalle 3"
+					>
+						<img
+							class="thumbnail-item"
+							src="/img/imagen-4.jpg"
+							alt="Un castillo de juegos infantiles hecho con materiales de ferretería"
+						/>
+					</a>
+				</div>
+			</section>
+
+			<section class="about-us-section">
+				<h1>Somos Ferretería</h1>
+				<p>
+					La ferretería venezolana ha dejado una huella imborrable en
+					el país, con materiales y herramientas que son la base de
+					cada vivienda, estructura industrial y proyecto de
+					infraestructura. Figuras icónicas como los ingenieros,
+					arquitectos, maestros de obra y artesanos han elevado el
+					nombre del país a nivel nacional e internacional con su
+					dedicación y pericia. Hoy en día, nuestra Ferretería es
+					parte de esa rica tradición. Conservamos nuestras raíces y
+					valores, como la integridad, la resiliencia y la pasión por
+					el trabajo bien hecho, ofreciéndote siempre las herramientas
+					y materiales de la más alta calidad para que cada uno de tus
+					proyectos sea un éxito.
+				</p>
+			</section>
+		</main>
+
+		<div
+			class="popup-overlay"
+			id="popup-big-img"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="popup-title-big"
+		>
+			<div class="popup-content">
+				<h3 id="popup-title-big" class="sr-only">
+					Imagen principal ampliada
+				</h3>
+				<figure>
+					<img
+						src="/img/imagen-1.jpg"
+						alt="Vista ampliada de una construcción en Venezuela"
+						class="popup-image"
+					/>
+					<a
+						href="#gallery-container"
+						class="popup-close"
+						title="Cerrar imagen"
+						aria-label="Cerrar vista de imagen ampliada"
+						>&times;</a
+					>
+				</figure>
+			</div>
+		</div>
+
+		<div
+			class="popup-overlay"
+			id="popup-small-img-1"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="popup-title-small-1"
+		>
+			<div class="popup-content">
+				<h3 id="popup-title-small-1" class="sr-only">
+					Imagen de detalle ampliada 1
+				</h3>
+				<figure>
+					<img
+						src="/img/imagen-2.jpg"
+						alt="Vista ampliada de herramientas de ferretería en un taller"
+						class="popup-image"
+					/>
+					<a
+						href="#gallery-container"
+						class="popup-close"
+						title="Cerrar imagen"
+						aria-label="Cerrar vista de imagen ampliada"
+						>&times;</a
+					>
+				</figure>
+			</div>
+		</div>
+
+		<div
+			class="popup-overlay"
+			id="popup-small-img-2"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="popup-title-small-2"
+		>
+			<div class="popup-content">
+				<h3 id="popup-title-small-2" class="sr-only">
+					Imagen de detalle ampliada 2
+				</h3>
+				<figure>
+					<img
+						src="/img/imagen-3.jpg"
+						alt="Vista ampliada de una obra en construcción con materiales modernos"
+						class="popup-image"
+					/>
+					<a
+						href="#gallery-container"
+						class="popup-close"
+						title="Cerrar imagen"
+						aria-label="Cerrar vista de imagen ampliada"
+						>&times;</a
+					>
+				</figure>
+			</div>
+		</div>
+
+		<div
+			class="popup-overlay"
+			id="popup-small-img-3"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="popup-title-small-3"
+		>
+			<div class="popup-content">
+				<h3 id="popup-title-small-3" class="sr-only">
+					Imagen de detalle ampliada 3
+				</h3>
+				<figure>
+					<img
+						src="/img/imagen-4.jpg"
+						alt="Vista ampliada de un castillo de juegos infantiles hecho con materiales de ferretería"
+						class="popup-image"
+					/>
+					<a
+						href="#gallery-container"
+						class="popup-close"
+						title="Cerrar imagen"
+						aria-label="Cerrar vista de imagen ampliada"
+						>&times;</a
+					>
+				</figure>
+			</div>
+		</div>
+	</body>
+</html>

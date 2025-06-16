@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" href="/img/martillo-y-llave.png" />
+		<link rel="stylesheet" href="/style/admin.css" />
+		<link rel="stylesheet" href="/css/bootstrap.min.css" />
+		<title>Panel de Administración - Productos</title>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">⚙️ Panel de Administración</a>
+				<div class="collapse navbar-collapse" id="navbarNavAdmin">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="/productos.html"
+								>🏪 Ir a Tienda</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<main class="container">
+			<h2 class="mb-5 text-center text-primary">
+				📦 Gestión de Productos
+			</h2>
+
+			<div class="text-center mb-5">
+				<button id="broadcastUpdateBtn" class="btn btn-warning btn-lg">
+					🔄 Notificar Tienda para Actualizar Productos
+				</button>
+			</div>
+
+			<button
+				type="button"
+				class="btn btn-success mb-4"
+				data-bs-toggle="modal"
+				data-bs-target="#addProductModal"
+			>
+				➕ Añadir Nuevo Producto
+			</button>
+
+			<div class="table-responsive">
+				<table class="table table-striped table-hover">
+					<thead class="table-dark">
+						<tr>
+							<th>ID</th>
+							<th>Imagen</th>
+							<th>Nombre</th>
+							<th>Descripción</th>
+							<th>Precio</th>
+							<th>Stock</th>
+							<th>Unidad</th>
+							<th>Descuento (%)</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody id="productosTableBody"></tbody>
+				</table>
+			</div>
+		</main>
+
+		<div
+			class="toast-container position-fixed bottom-0 end-0 p-3"
+			style="z-index: 11"
+		>
+			<div
+				id="liveToast"
+				class="toast"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="toast-header">
+					<strong class="me-auto">Notificación</strong>
+					<small>Ahora</small>
+					<button
+						type="button"
+						class="btn-close"
+						data-bs-dismiss="toast"
+						aria-label="Close"
+					></button>
+				</div>
+				<div class="toast-body"></div>
+			</div>
+		</div>
+
+		<div
+			class="modal fade"
+			id="addProductModal"
+			tabindex="-1"
+			aria-labelledby="addProductModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="addProductModalLabel">
+							Añadir Nuevo Producto
+						</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<form id="addProductForm">
+							<div class="mb-3">
+								<label for="nombreProducto" class="form-label"
+									>Nombre del Producto</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="nombreProducto"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="descripcion" class="form-label"
+									>Descripción</label
+								>
+								<textarea
+									class="form-control"
+									id="descripcion"
+									rows="3"
+								></textarea>
+							</div>
+							<div class="mb-3">
+								<label for="precio" class="form-label"
+									>Precio</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									class="form-control"
+									id="precio"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="stock" class="form-label"
+									>Stock</label
+								>
+								<input
+									type="number"
+									class="form-control"
+									id="stock"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="imagenURL" class="form-label"
+									>URL de la Imagen (ej: producto1.jpg)</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="imagenURL"
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="unidad" class="form-label"
+									>Unidad (ej: kg, und, mts)</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="unidad"
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="descuento" class="form-label"
+									>Descuento (%)</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									class="form-control"
+									id="descuento"
+									value="0"
+								/>
+							</div>
+							<button type="submit" class="btn btn-primary">
+								Guardar Producto
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div
+			class="modal fade"
+			id="editProductModal"
+			tabindex="-1"
+			aria-labelledby="editProductModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="editProductModalLabel">
+							Editar Producto
+						</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<form id="editProductForm">
+							<input type="hidden" id="editIdProducto" />
+							<div class="mb-3">
+								<label
+									for="editNombreProducto"
+									class="form-label"
+									>Nombre del Producto</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="editNombreProducto"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editDescripcion" class="form-label"
+									>Descripción</label
+								>
+								<textarea
+									class="form-control"
+									id="editDescripcion"
+									rows="3"
+								></textarea>
+							</div>
+							<div class="mb-3">
+								<label for="editPrecio" class="form-label"
+									>Precio</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									class="form-control"
+									id="editPrecio"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editStock" class="form-label"
+									>Stock</label
+								>
+								<input
+									type="number"
+									class="form-control"
+									id="editStock"
+									required
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editImagenURL" class="form-label"
+									>URL de la Imagen (ej: producto1.jpg)</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="editImagenURL"
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editUnidad" class="form-label"
+									>Unidad (ej: kg, und, mts)</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									id="editUnidad"
+								/>
+							</div>
+							<div class="mb-3">
+								<label for="editDescuento" class="form-label"
+									>Descuento (%)</label
+								>
+								<input
+									type="number"
+									step="0.01"
+									class="form-control"
+									id="editDescuento"
+									value="0"
+								/>
+							</div>
+							<button type="submit" class="btn btn-primary">
+								Guardar Cambios
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script src="/js/socket.io.min.js"></script>
+		<script>
+			const API_URL = "http://localhost:3000/api/productos";
+			const productosTableBody =
+				document.getElementById("productosTableBody");
+			const addProductForm = document.getElementById("addProductForm");
+			const editProductForm = document.getElementById("editProductForm");
+			const addProductModal = new bootstrap.Modal(
+				document.getElementById("addProductModal")
+			);
+			const editProductModal = new bootstrap.Modal(
+				document.getElementById("editProductModal")
+			);
+			const liveToast = document.getElementById("liveToast");
+			const toastBody = liveToast.querySelector(".toast-body");
+			const broadcastUpdateBtn =
+				document.getElementById("broadcastUpdateBtn");
+
+			// Conexión de Socket.IO
+			const socket = io("http://localhost:3000");
+
+			socket.on("connect", () => {
+				console.log("Conectado al servidor Socket.IO desde admin");
+			});
+
+			socket.on("disconnect", () => {
+				console.log("Desconectado del servidor Socket.IO desde admin");
+			});
+
+			// Escuchar el evento de actualización (propio del admin o por otras fuentes)
+			socket.on("productosActualizados", () => {
+				console.log(
+					"Evento 'productosActualizados' recibido. Recargando tabla..."
+				);
+				cargarProductosAdmin(); // Recargar la tabla de productos
+			});
+
+			function showToast(message, type = "success") {
+				toastBody.textContent = message;
+				liveToast.classList.remove(
+					"text-bg-success",
+					"text-bg-danger",
+					"text-bg-warning"
+				); // Limpiar clases previas
+				if (type === "success") {
+					liveToast.classList.add("text-bg-success");
+				} else if (type === "danger") {
+					liveToast.classList.add("text-bg-danger");
+				} else if (type === "warning") {
+					liveToast.classList.add("text-bg-warning");
+				}
+				const toast = new bootstrap.Toast(liveToast);
+				toast.show();
+			}
+
+			async function cargarProductosAdmin() {
+				try {
+					const response = await fetch(API_URL);
+					if (!response.ok) {
+						throw new Error(
+							`HTTP error! status: ${response.status}`
+						);
+					}
+					const productos = await response.json();
+					productosTableBody.innerHTML = ""; // Limpiar tabla existente
+
+					productos.forEach((producto) => {
+						const row = productosTableBody.insertRow();
+						row.innerHTML = `
+                            <td>${producto.ID_Productos}</td>
+                            <td><img src="/img/productos/${
+								producto.ImagenURL
+							}" alt="${
+							producto.NombreProducto
+						}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                            <td>${producto.NombreProducto}</td>
+                            <td>${producto.Descripcion}</td>
+                            <td>$${producto.Precio.toFixed(2)}</td>
+                            <td>${producto.Stock}</td>
+                            <td>${producto.Unidad || ""}</td>
+                            <td>${producto.Descuento || 0}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-info edit-btn" data-id="${
+									producto.ID_Productos
+								}">Editar</button>
+                                <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${
+									producto.ID_Productos
+								}">Eliminar</button>
+                            </td>
+                        `;
+					});
+
+					// Asignar eventos a los botones de editar y eliminar
+					document.querySelectorAll(".edit-btn").forEach((button) => {
+						button.addEventListener("click", (event) => {
+							const productId = event.target.dataset.id;
+							abrirModalEditar(productId);
+						});
+					});
+
+					document
+						.querySelectorAll(".delete-btn")
+						.forEach((button) => {
+							button.addEventListener("click", (event) => {
+								const productId = event.target.dataset.id;
+								deleteProducto(productId);
+							});
+						});
+				} catch (error) {
+					console.error(
+						"Error al cargar los productos en el admin:",
+						error
+					);
+					showToast(
+						"Error al cargar productos. Asegúrate de que el servidor Node.js esté ejecutándose.",
+						"danger"
+					);
+				}
+			}
+
+			addProductForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+
+				const newProduct = {
+					NombreProducto:
+						document.getElementById("nombreProducto").value,
+					Descripcion: document.getElementById("descripcion").value,
+					Precio: parseFloat(document.getElementById("precio").value),
+					Stock: parseInt(document.getElementById("stock").value),
+					ImagenURL: document.getElementById("imagenURL").value,
+					Unidad: document.getElementById("unidad").value,
+					Descuento:
+						parseFloat(
+							document.getElementById("descuento").value
+						) || 0,
+				};
+
+				try {
+					const response = await fetch(API_URL, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(newProduct),
+					});
+					const result = await response.json();
+					if (response.ok) {
+						showToast("Producto añadido con éxito.");
+						addProductModal.hide();
+						addProductForm.reset(); // Limpiar el formulario
+						// La tabla se actualizará automáticamente por el evento de Socket.IO
+						// ya que el server.js lo emite al guardar
+					} else {
+						showToast(
+							"Error al añadir producto: " +
+								(result.error || response.statusText),
+							"danger"
+						);
+					}
+				} catch (error) {
+					console.error("Error en la petición POST:", error);
+					showToast(
+						"Error de conexión al añadir producto.",
+						"danger"
+					);
+				}
+			});
+
+			async function abrirModalEditar(id) {
+				try {
+					const response = await fetch(`${API_URL}/${id}`);
+					if (!response.ok) {
+						throw new Error(
+							`HTTP error! status: ${response.status}`
+						);
+					}
+					const product = await response.json();
+
+					document.getElementById("editIdProducto").value =
+						product.ID_Productos;
+					document.getElementById("editNombreProducto").value =
+						product.NombreProducto;
+					document.getElementById("editDescripcion").value =
+						product.Descripcion;
+					document.getElementById("editPrecio").value =
+						product.Precio;
+					document.getElementById("editStock").value = product.Stock;
+					document.getElementById("editImagenURL").value =
+						product.ImagenURL;
+					document.getElementById("editUnidad").value =
+						product.Unidad;
+					document.getElementById("editDescuento").value =
+						product.Descuento;
+
+					editProductModal.show();
+				} catch (error) {
+					console.error(
+						"Error al obtener producto para editar:",
+						error
+					);
+					showToast(
+						"Error al cargar los datos del producto para editar.",
+						"danger"
+					);
+				}
+			}
+
+			editProductForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+
+				const id = document.getElementById("editIdProducto").value;
+				const updatedProduct = {
+					NombreProducto:
+						document.getElementById("editNombreProducto").value,
+					Descripcion:
+						document.getElementById("editDescripcion").value,
+					Precio: parseFloat(
+						document.getElementById("editPrecio").value
+					),
+					Stock: parseInt(document.getElementById("editStock").value),
+					ImagenURL: document.getElementById("editImagenURL").value,
+					Unidad: document.getElementById("editUnidad").value,
+					Descuento:
+						parseFloat(
+							document.getElementById("editDescuento").value
+						) || 0,
+				};
+
+				try {
+					const response = await fetch(`${API_URL}/${id}`, {
+						method: "PUT",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(updatedProduct),
+					});
+					const result = await response.json();
+					if (response.ok) {
+						showToast("Producto actualizado con éxito.");
+						editProductModal.hide();
+						// La tabla se actualizará automáticamente por el evento de Socket.IO
+						// ya que el server.js lo emite al guardar
+					} else {
+						showToast(
+							"Error al actualizar producto: " +
+								(result.error || response.statusText),
+							"danger"
+						);
+					}
+				} catch (error) {
+					console.error("Error en la petición PUT:", error);
+					showToast(
+						"Error de conexión al actualizar producto.",
+						"danger"
+					);
+				}
+			});
+
+			async function deleteProducto(id) {
+				if (
+					confirm(
+						"¿Estás seguro de que quieres eliminar este producto?"
+					)
+				) {
+					try {
+						const response = await fetch(`${API_URL}/${id}`, {
+							method: "DELETE",
+						});
+						const result = await response.json();
+						if (response.ok) {
+							showToast("Producto eliminado con éxito.");
+							// La tabla se actualizará automáticamente por el evento de Socket.IO
+							// ya que el server.js lo emite al eliminar
+						} else {
+							showToast(
+								"Error al eliminar producto: " +
+									(result.error || response.statusText),
+								"danger"
+							);
+						}
+					} catch (error) {
+						console.error("Error en la petición DELETE:", error);
+						showToast(
+							"Error de conexión al eliminar producto.",
+							"danger"
+						);
+					}
+				}
+			}
+
+			document.addEventListener("DOMContentLoaded", cargarProductosAdmin);
+
+			// Evento para el botón de notificar a la tienda
+			broadcastUpdateBtn.addEventListener("click", () => {
+				socket.emit("productosActualizados"); // Emitir el evento al servidor
+				showToast(
+					"Notificación de actualización enviada a la tienda.",
+					"info"
+				);
+			});
+		</script>
+	</body>
+</html>

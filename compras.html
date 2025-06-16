@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="icon"
+			href="./img/martillo-y-llave.png"
+			type="image/x-icon"
+		/>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/style/productos.css" />
+		<title>Ferreteria - Mis Compras</title>
+		<style>
+			/* Estilos específicos para la página de compras */
+			body {
+				background-color: var(--primary-bg);
+				color: var(--text-color-dark);
+			}
+			.container.my-5 {
+				background-color: var(--secondary-bg);
+				border-radius: 12px;
+				box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+				padding: 30px;
+			}
+			.table-ordenes th {
+				background-color: var(--accent-color);
+				color: #fff;
+			}
+			.table-ordenes td {
+				vertical-align: middle;
+			}
+			.table-striped > tbody > tr:nth-of-type(odd) > * {
+				--bs-table-bg-type: var(--primary-bg); /* Para filas impares */
+			}
+			.table-striped > tbody > tr:nth-of-type(even) > * {
+				--bs-table-bg-type: var(--secondary-bg); /* Para filas pares */
+			}
+			.order-detail-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+			}
+			.order-detail-list li {
+				margin-bottom: 5px;
+				font-size: 0.9em;
+			}
+			.order-detail-list li img {
+				width: 30px;
+				height: 30px;
+				object-fit: cover;
+				border-radius: 3px;
+				margin-right: 5px;
+				vertical-align: middle;
+			}
+			.status-badge {
+				padding: 0.4em 0.8em;
+				border-radius: 0.25rem;
+				font-weight: bold;
+			}
+			.status-Pendiente {
+				background-color: #ffc107; /* Amarillo */
+				color: #343a40;
+			}
+			.status-Completada {
+				background-color: #28a745; /* Verde */
+				color: #fff;
+			}
+			.status-Cancelada {
+				background-color: #dc3545; /* Rojo */
+				color: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<header data-bs-theme="dark">
+			<div class="collapse text-bg-dark" id="navbarHeader">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-8 col-md-7 py-4">
+							<h4>Sobre Nosotros</h4>
+							<p class="text-body-secondary">
+								Somos tu ferretería de confianza, ofreciendo una
+								amplia gama de productos de calidad para todos
+								tus proyectos, grandes o pequeños.
+							</p>
+						</div>
+						<div class="col-sm-4 offset-md-1 py-4">
+							<ul class="list-unstyled"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="navbar navbar-dark bg-dark shadow-sm">
+				<div class="container">
+					<a href="#" class="navbar-brand d-flex align-items-center">
+						<img
+							src="./img/martillo-y-llave.png"
+							alt="Logo Ferretería"
+							width="30"
+							height="24"
+							class="me-2"
+						/>
+						<strong>Ferretería "La Herramienta Perfecta"</strong>
+					</a>
+					<ul class="navbar-nav d-flex flex-row me-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="/admin.html"
+								>Administracion</a
+							>
+						</li>
+					</ul>
+					<button
+						class="navbar-toggler"
+						type="button"
+						data-bs-toggle="collapse"
+						data-bs-target="#navbarHeader"
+						aria-controls="navbarHeader"
+						aria-expanded="false"
+						aria-label="Toggle navigation"
+					>
+						<span class="navbar-toggler-icon"></span>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="container my-5">
+			<h2 class="mb-4 text-center text-primary">Mis Órdenes de Compra</h2>
+
+			<div id="ordenes-container" class="table-responsive">
+				<table class="table table-striped table-hover table-ordenes">
+					<thead>
+						<tr>
+							<th>ID Orden</th>
+							<th>Fecha</th>
+							<th>Total</th>
+							<th>Método Pago</th>
+							<th>Estado</th>
+							<th>Productos</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody id="ordenes-table-body"></tbody>
+				</table>
+				<p
+					id="no-ordenes-message"
+					class="text-center text-muted d-none"
+				>
+					No has realizado ninguna compra aún.
+				</p>
+			</div>
+		</main>
+
+		<footer class="text-body-secondary py-5">
+			<div class="container">
+				<p class="float-end mb-1">
+					<a href="#">Volver arriba</a>
+				</p>
+				<p class="mb-1">
+					&copy; 2025 Ferretería "La Herramienta Perfecta". Todos los
+					derechos reservados.
+				</p>
+			</div>
+		</footer>
+
+		<div
+			class="modal fade"
+			id="ordenDetailsModal"
+			tabindex="-1"
+			aria-labelledby="ordenDetailsModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="ordenDetailsModalLabel">
+							Detalles de la Orden
+							<span id="modal-orden-id"></span>
+						</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<p>
+							<strong>Fecha:</strong>
+							<span id="modal-orden-fecha"></span>
+						</p>
+						<p>
+							<strong>Total:</strong>
+							<span id="modal-orden-total"></span>
+						</p>
+						<p>
+							<strong>Método de Pago:</strong>
+							<span id="modal-orden-metodo-pago"></span>
+						</p>
+						<p>
+							<strong>Estado:</strong>
+							<span
+								id="modal-orden-estado"
+								class="status-badge"
+							></span>
+						</p>
+
+						<h6 class="mt-4">Productos en esta Orden:</h6>
+						<ul id="modal-orden-productos" class="list-group"></ul>
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							Cerrar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+		<script>
+			const API_ORDENES_URL = "http://localhost:3000/api/ordenes";
+			const ordenesTableBody =
+				document.getElementById("ordenes-table-body");
+			const noOrdenesMessage =
+				document.getElementById("no-ordenes-message");
+
+			// Modal elements
+			const ordenDetailsModal = new bootstrap.Modal(
+				document.getElementById("ordenDetailsModal")
+			);
+			const modalOrdenId = document.getElementById("modal-orden-id");
+			const modalOrdenFecha =
+				document.getElementById("modal-orden-fecha");
+			const modalOrdenTotal =
+				document.getElementById("modal-orden-total");
+			const modalOrdenMetodoPago = document.getElementById(
+				"modal-orden-metodo-pago"
+			);
+			const modalOrdenEstado =
+				document.getElementById("modal-orden-estado");
+			const modalOrdenProductos = document.getElementById(
+				"modal-orden-productos"
+			);
+
+			// Socket.IO
+			const socket = io("http://localhost:3000");
+
+			socket.on("connect", () => {
+				console.log(
+					"Conectado al servidor Socket.IO desde compras.html"
+				);
+			});
+
+			socket.on("recargarOrdenes", () => {
+				console.log(
+					"Evento 'recargarOrdenes' recibido. Recargando órdenes..."
+				);
+				cargarOrdenes();
+			});
+
+			async function cargarOrdenes() {
+				try {
+					const response = await fetch(API_ORDENES_URL);
+					const ordenes = await response.json();
+					displayOrdenes(ordenes);
+				} catch (error) {
+					console.error("Error al cargar las órdenes:", error);
+					ordenesTableBody.innerHTML = "";
+					noOrdenesMessage.classList.remove("d-none");
+				}
+			}
+
+			function displayOrdenes(ordenes) {
+				ordenesTableBody.innerHTML = ""; // Limpiar la tabla
+
+				if (ordenes.length === 0) {
+					noOrdenesMessage.classList.remove("d-none");
+					return;
+				} else {
+					noOrdenesMessage.classList.add("d-none");
+				}
+
+				ordenes.forEach((orden) => {
+					const row = document.createElement("tr");
+
+					const fecha = new Date(orden.FechaOrden).toLocaleString();
+					const productosDetalle = orden.ProductosDetalle
+						? orden.ProductosDetalle.split(" || ")
+								.map((item) => `<li>${item}</li>`)
+								.join("")
+						: "<li>N/A</li>";
+
+					row.innerHTML = `
+                        <td>${orden.ID_Orden}</td>
+                        <td>${fecha}</td>
+                        <td>$${orden.Total.toFixed(2)}</td>
+                        <td>${orden.MetodoPago || "N/A"}</td>
+                        <td><span class="status-badge status-${orden.Estado}">${
+						orden.Estado
+					}</span></td>
+                        <td>
+                            <ul class="order-detail-list">
+                                ${productosDetalle}
+                            </ul>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm view-details-btn" data-id="${
+								orden.ID_Orden
+							}">Ver Detalles</button>
+                        </td>
+                    `;
+					ordenesTableBody.appendChild(row);
+				});
+
+				// Añadir event listeners para los botones "Ver Detalles"
+				document
+					.querySelectorAll(".view-details-btn")
+					.forEach((button) => {
+						button.addEventListener("click", (event) => {
+							const ordenId = event.target.dataset.id;
+							showOrdenDetails(ordenId);
+						});
+					});
+			}
+
+			async function showOrdenDetails(id) {
+				try {
+					const response = await fetch(`${API_ORDENES_URL}/${id}`);
+					const orden = await response.json();
+
+					modalOrdenId.textContent = orden.ID_Orden;
+					modalOrdenFecha.textContent = new Date(
+						orden.FechaOrden
+					).toLocaleString();
+					modalOrdenTotal.textContent = `$${orden.Total.toFixed(2)}`;
+					modalOrdenMetodoPago.textContent =
+						orden.MetodoPago || "N/A";
+					modalOrdenEstado.textContent = orden.Estado;
+					modalOrdenEstado.className = `status-badge status-${orden.Estado}`; // Actualiza la clase para el estilo
+
+					modalOrdenProductos.innerHTML = ""; // Limpiar lista de productos
+					if (orden.productos && orden.productos.length > 0) {
+						orden.productos.forEach((p) => {
+							const listItem = document.createElement("li");
+							listItem.className =
+								"list-group-item d-flex align-items-center";
+							listItem.style.backgroundColor =
+								"var(--secondary-bg)"; // Mantener el estilo oscuro
+							listItem.style.color = "var(--text-color-dark)";
+
+							const precioCalculado =
+								p.PrecioUnitario *
+								(1 - p.DescuentoAplicado / 100);
+
+							listItem.innerHTML = `
+                                <img src="${p.ImagenURL}" alt="${
+								p.NombreProducto
+							}" class="me-3" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                <div>
+                                    <strong>${p.NombreProducto}</strong> (x${
+								p.Cantidad
+							})<br>
+                                    Precio Unitario: $${p.PrecioUnitario.toFixed(
+										2
+									)}
+                                    ${
+										p.DescuentoAplicado > 0
+											? `<span class="badge bg-success ms-2">${p.DescuentoAplicado}% OFF</span>`
+											: ""
+									}
+                                    <br>
+                                    Subtotal: <strong>$${(
+										precioCalculado * p.Cantidad
+									).toFixed(2)}</strong>
+                                </div>
+                            `;
+							modalOrdenProductos.appendChild(listItem);
+						});
+					} else {
+						const listItem = document.createElement("li");
+						listItem.className = "list-group-item";
+						listItem.textContent =
+							"No hay detalles de productos para esta orden.";
+						modalOrdenProductos.appendChild(listItem);
+					}
+
+					ordenDetailsModal.show();
+				} catch (error) {
+					console.error(
+						"Error al cargar los detalles de la orden:",
+						error
+					);
+					alert("No se pudieron cargar los detalles de la orden.");
+				}
+			}
+
+			// Cargar órdenes al iniciar la página
+			document.addEventListener("DOMContentLoaded", cargarOrdenes);
+		</script>
+	</body>
+</html>

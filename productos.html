@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="icon"
+			href="./img/martillo-y-llave.png"
+			type="image/x-icon"
+		/>
+
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<link rel="stylesheet" href="/style/productos.css" />
+
+		<title>Ferreteria - Catálogo</title>
+	</head>
+	<body>
+		<header data-bs-theme="dark">
+			<div class="collapse text-bg-dark" id="navbarHeader">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-8 col-md-7 py-4">
+							<h4>Sobre Nosotros</h4>
+							<p class="text-body-secondary">
+								Somos tu ferretería de confianza, ofreciendo una
+								amplia gama de productos de calidad para todos
+								tus proyectos, grandes o pequeños.
+							</p>
+						</div>
+						<div class="col-sm-4 offset-md-1 py-4">
+							<h4>Contacto</h4>
+							<ul class="list-unstyled">
+								<li>
+									<a href="#" class="text-white"
+										>Síguenos en Instagram</a
+									>
+								</li>
+								<li>
+									<a href="#" class="text-white"
+										>Suscribete en nuestro canal de
+										Youtube</a
+									>
+								</li>
+								<li>
+									<a
+										href="/dashboardUsuario.html"
+										class="text-white"
+										>Ir a mi perfil</a
+									>
+								</li>
+								<li>
+									<a
+										href="/paginaPrincipal.html"
+										class="text-white"
+										>Ir a inicio</a
+									>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="navbar navbar-dark bg-dark shadow-sm">
+				<div class="container">
+					<a href="#" class="navbar-brand d-flex align-items-center">
+						<img
+							src="./img/martillo-y-llave.png"
+							alt="Logo Ferretería"
+							width="30"
+							height="24"
+							class="me-2"
+						/>
+						<strong>Ferretería "La Herramienta Perfecta"</strong>
+					</a>
+					<ul class="navbar-nav d-flex flex-row me-auto"></ul>
+					<button
+						class="navbar-toggler"
+						type="button"
+						data-bs-toggle="collapse"
+						data-bs-target="#navbarHeader"
+						aria-controls="navbarHeader"
+						aria-expanded="false"
+						aria-label="Toggle navigation"
+					>
+						<span class="navbar-toggler-icon"></span>
+					</button>
+				</div>
+			</div>
+		</header>
+
+		<main>
+			<section class="py-5 text-center container">
+				<div class="row py-lg-5">
+					<div class="col-lg-6 col-md-8 mx-auto">
+						<h1 class="fw-light">Nuestro Catálogo de Productos</h1>
+						<p class="lead text-body-secondary">
+							Encuentra las herramientas y materiales que
+							necesitas para tus proyectos. Calidad y precio en un
+							solo lugar.
+						</p>
+					</div>
+				</div>
+				<div class="row mb-4 justify-content-center filter-controls">
+					<div class="col-md-4">
+						<input
+							type="text"
+							id="searchBar"
+							class="form-control"
+							placeholder="Buscar productos..."
+						/>
+					</div>
+					<div class="col-md-3">
+						<select id="categoryFilter" class="form-select">
+							<option value="">Todas las categorías</option>
+						</select>
+					</div>
+					<div class="col-md-2">
+						<button
+							id="clearFiltersBtn"
+							class="btn btn-secondary w-100"
+						>
+							Limpiar Filtros
+						</button>
+					</div>
+				</div>
+				<div class="row justify-content-center mb-4">
+					<div class="col-lg-8">
+						<div
+							class="card text-center shadow-lg"
+							style="background-color: var(--secondary-bg)"
+						>
+							<div class="card-body">
+								<h3 class="card-title text-primary">
+									🛒 Mi Carrito
+									<span
+										id="cartItemCount"
+										class="badge bg-secondary ms-2"
+										>0</span
+									>
+								</h3>
+								<ul
+									id="cartList"
+									class="list-group list-group-flush text-start"
+								>
+									<li
+										class="list-group-item"
+										style="
+											background-color: var(
+												--secondary-bg
+											);
+											color: var(--text-color-dark);
+										"
+									>
+										No hay productos en el carrito.
+									</li>
+								</ul>
+								<div
+									class="d-flex justify-content-between align-items-center mt-3"
+								>
+									<h4 class="mb-0 text-dark">
+										Total:
+										<span
+											id="cartTotal"
+											class="text-success"
+											>$0.00</span
+										>
+									</h4>
+									<div>
+										<button
+											id="clearCartBtn"
+											class="btn btn-outline-danger me-2"
+										>
+											Vaciar Carrito
+										</button>
+										<button
+											id="checkoutBtn"
+											class="btn btn-primary"
+										>
+											Finalizar Compra
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<div class="album py-5 bg-body-tertiary">
+				<div class="container">
+					<div
+						class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"
+						id="productos-container"
+					></div>
+				</div>
+			</div>
+		</main>
+
+		<footer class="text-body-secondary py-5">
+			<div class="container">
+				<p class="float-end mb-1">
+					<a href="#">Volver arriba</a>
+				</p>
+				<p class="mb-1">
+					&copy; 2025 Ferretería "La Herramienta Perfecta". Todos los
+					derechos reservados.
+				</p>
+			</div>
+		</footer>
+
+		<div
+			class="modal fade"
+			id="productDetailsModal"
+			tabindex="-1"
+			aria-labelledby="productDetailsModalLabel"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="productDetailsModalLabel">
+							Detalles del Producto
+						</h5>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body text-center">
+						<img
+							id="modal-product-image"
+							src=""
+							class="img-fluid mb-3"
+							alt="Imagen del producto"
+						/>
+						<h4 id="modal-product-name"></h4>
+						<p
+							id="modal-product-description"
+							class="text-muted"
+						></p>
+						<p>
+							Categoría:
+							<strong id="modal-product-category"></strong>
+						</p>
+						<p>
+							Disponibilidad:
+							<strong id="modal-product-stock"></strong>
+						</p>
+						<div
+							class="d-flex justify-content-center align-items-baseline mb-3"
+						>
+							<h4
+								class="mb-0 me-2 text-danger"
+								id="modal-original-price"
+								style="text-decoration: line-through"
+							></h4>
+							<h3
+								class="mb-0 text-success"
+								id="modal-product-price"
+							></h3>
+						</div>
+						<div
+							id="quantity-control"
+							class="d-flex justify-content-center align-items-center mb-3"
+						>
+							<button
+								id="decrease-quantity"
+								class="btn btn-primary"
+							>
+								-
+							</button>
+							<input
+								type="text"
+								id="quantity-input"
+								class="form-control text-center mx-2"
+								value="1"
+								readonly
+								style="width: 80px"
+							/>
+							<button
+								id="increase-quantity"
+								class="btn btn-primary"
+							>
+								+
+							</button>
+						</div>
+						<h4 class="mb-0 text-primary">
+							Total: <span id="modal-product-total">$0.00</span>
+						</h4>
+					</div>
+					<div class="modal-footer justify-content-center">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							data-bs-dismiss="modal"
+						>
+							Cerrar
+						</button>
+						<button
+							type="button"
+							class="btn btn-success"
+							id="addToCartBtn"
+						>
+							🛒 Añadir al Carrito
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+		<script>
+			const API_URL = "http://localhost:3000/api/productos";
+			const API_COMPRAS_URL = "http://localhost:3000/api/compras"; // Nueva URL
+			const productosContainer = document.getElementById(
+				"productos-container"
+			);
+			const categoryFilter = document.getElementById("categoryFilter");
+			const searchBar = document.getElementById("searchBar");
+			const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+
+			// Modal elements
+			const productDetailsModal = new bootstrap.Modal(
+				document.getElementById("productDetailsModal")
+			);
+			const modalProductImage = document.getElementById(
+				"modal-product-image"
+			);
+			const modalProductName =
+				document.getElementById("modal-product-name");
+			const modalProductDescription = document.getElementById(
+				"modal-product-description"
+			);
+			const modalProductCategory = document.getElementById(
+				"modal-product-category"
+			);
+			const modalProductStock = document.getElementById(
+				"modal-product-stock"
+			);
+			const modalOriginalPrice = document.getElementById(
+				"modal-original-price"
+			);
+			const modalProductPrice = document.getElementById(
+				"modal-product-price"
+			);
+			const quantityInput = document.getElementById("quantity-input");
+			const increaseQuantityBtn =
+				document.getElementById("increase-quantity");
+			const decreaseQuantityBtn =
+				document.getElementById("decrease-quantity");
+			const modalProductTotal = document.getElementById(
+				"modal-product-total"
+			);
+			const addToCartBtn = document.getElementById("addToCartBtn"); // Botón para añadir al carrito
+
+			let currentProduct = null; // Para mantener el producto actual abierto en el modal
+
+			// Carrito de compras (Nuevo)
+			let carrito = [];
+			const cartList = document.getElementById("cartList");
+			const cartTotalSpan = document.getElementById("cartTotal");
+			const cartItemCountSpan = document.getElementById("cartItemCount");
+			const clearCartBtn = document.getElementById("clearCartBtn");
+			const checkoutBtn = document.getElementById("checkoutBtn"); // Botón de finalizar compra
+
+			// Socket.IO
+			const socket = io("http://localhost:3000");
+
+			socket.on("connect", () => {
+				console.log("Conectado al servidor Socket.IO");
+			});
+
+			socket.on("recargarProductos", () => {
+				console.log(
+					"Evento 'recargarProductos' recibido. Recargando productos..."
+				);
+				cargarProductos();
+			});
+
+			async function cargarProductos() {
+				try {
+					const response = await fetch(API_URL);
+					const productos = await response.json();
+					displayProductos(productos);
+					populateCategories(productos);
+				} catch (error) {
+					console.error("Error al cargar los productos:", error);
+				}
+			}
+
+			function displayProductos(productos) {
+				productosContainer.innerHTML = "";
+				let filteredProductos = [...productos]; // Copia para no modificar el original
+
+				const searchTerm = searchBar.value.toLowerCase();
+				const selectedCategory = categoryFilter.value;
+
+				if (searchTerm) {
+					filteredProductos = filteredProductos.filter(
+						(p) =>
+							p.NombreProducto.toLowerCase().includes(
+								searchTerm
+							) ||
+							p.Descripcion.toLowerCase().includes(searchTerm)
+					);
+				}
+
+				if (selectedCategory) {
+					filteredProductos = filteredProductos.filter(
+						(p) => p.Categoria === selectedCategory
+					);
+				}
+
+				if (filteredProductos.length === 0) {
+					productosContainer.innerHTML = `
+			                     <div class="col-12 text-center text-muted">
+			                         <h3>No se encontraron productos que coincidan con los filtros.</h3>
+			                     </div>
+			                 `;
+					return;
+				}
+
+				filteredProductos.forEach((producto) => {
+					const card = document.createElement("div");
+					card.className = "col";
+					const precioConDescuento =
+						producto.Precio * (1 - producto.Descuento / 100);
+					const tieneDescuento = producto.Descuento > 0;
+
+					card.innerHTML = `
+			                     <div class="card shadow-sm h-100">
+			                         <div style="position: relative; overflow: hidden;">
+			                             <img src="/img/productos/${
+												producto.ImagenURL
+											}" class="card-img-top" alt="${
+						producto.NombreProducto
+					}">
+			                             ${
+												tieneDescuento
+													? `<span class="badge bg-success position-absolute top-0 end-0 m-2">${producto.Descuento}% OFF</span>`
+													: ""
+											}
+			                         </div>
+			                         <div class="card-body d-flex flex-column">
+			                             <h5 class="card-title">${
+												producto.NombreProducto
+											}</h5>
+			                             <p class="card-text text-muted">${producto.Descripcion.substring(
+												0,
+												70
+											)}...</p>
+			                             <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+			                                 <div class="price-container">
+			                                     ${
+														tieneDescuento
+															? `<span class="original-price">$${producto.Precio.toFixed(
+																	2
+															  )}</span>`
+															: ""
+													}
+			                                     <span class="card-price">$${precioConDescuento.toFixed(
+														2
+													)}</span>
+			                                 </div>
+			                                 <button
+			                                     type="button"
+			                                     class="btn btn-sm btn-outline-primary"
+			                                     data-product-id="${producto.ID_Productos}"
+			                                 >
+			                                     Ver Detalles
+			                                 </button>
+			                             </div>
+			                         </div>
+			                     </div>
+			                 `;
+					productosContainer.appendChild(card);
+				});
+
+				// Añadir eventos a los botones "Ver Detalles"
+				productosContainer
+					.querySelectorAll(".btn-outline-primary")
+					.forEach((button) => {
+						button.addEventListener("click", (event) => {
+							const productId = event.target.dataset.productId;
+							showProductDetails(productId);
+						});
+					});
+			}
+
+			function populateCategories(productos) {
+				const categories = new Set();
+				productos.forEach((p) => {
+					if (p.Categoria) {
+						categories.add(p.Categoria);
+					}
+				});
+
+				categoryFilter.innerHTML =
+					'<option value="">Todas las categorías</option>';
+				categories.forEach((category) => {
+					const option = document.createElement("option");
+					option.value = category;
+					option.textContent = category;
+					categoryFilter.appendChild(option);
+				});
+			}
+
+			async function showProductDetails(id) {
+				try {
+					const response = await fetch(`${API_URL}/${id}`);
+					const producto = await response.json();
+					currentProduct = producto; // Guardar el producto actual
+
+					modalProductImage.src = `/img/productos/${producto.ImagenURL}`;
+					modalProductName.textContent = producto.NombreProducto;
+					modalProductDescription.textContent = producto.Descripcion;
+					modalProductCategory.textContent =
+						producto.Categoria || "N/A";
+					modalProductStock.textContent =
+						producto.Stock > 0
+							? `${producto.Stock} unidades`
+							: "Agotado";
+
+					// Mostrar precio original si hay descuento
+					if (producto.Descuento > 0) {
+						modalOriginalPrice.textContent = `$${producto.Precio.toFixed(
+							2
+						)}`;
+						modalOriginalPrice.style.display = "inline"; // Mostrar
+					} else {
+						modalOriginalPrice.style.display = "none"; // Ocultar
+					}
+
+					const precioConDescuento =
+						producto.Precio * (1 - producto.Descuento / 100);
+					modalProductPrice.textContent = `$${precioConDescuento.toFixed(
+						2
+					)}`;
+					quantityInput.value = 1; // Resetear cantidad a 1
+					updateModalTotal();
+
+					// Deshabilitar botones si no hay stock
+					addToCartBtn.disabled = producto.Stock === 0;
+					increaseQuantityBtn.disabled = producto.Stock === 0;
+					decreaseQuantityBtn.disabled = producto.Stock === 0;
+					quantityInput.disabled = producto.Stock === 0;
+
+					productDetailsModal.show();
+				} catch (error) {
+					console.error(
+						"Error al obtener detalles del producto:",
+						error
+					);
+					alert("No se pudieron cargar los detalles del producto.");
+				}
+			}
+
+			function updateModalTotal() {
+				if (!currentProduct) return;
+				const quantity = parseInt(quantityInput.value);
+				const precioConDescuento =
+					currentProduct.Precio *
+					(1 - currentProduct.Descuento / 100);
+				const total = precioConDescuento * quantity;
+				modalProductTotal.textContent = `$${total.toFixed(2)}`;
+			}
+
+			// Event Listeners para filtros
+			searchBar.addEventListener("input", cargarProductos);
+			categoryFilter.addEventListener("change", cargarProductos);
+			clearFiltersBtn.addEventListener("click", () => {
+				searchBar.value = "";
+				categoryFilter.value = "";
+				cargarProductos();
+			});
+
+			// Event Listeners para control de cantidad en el modal
+			increaseQuantityBtn.addEventListener("click", () => {
+				let quantity = parseInt(quantityInput.value);
+				if (currentProduct && quantity < currentProduct.Stock) {
+					quantity++;
+					quantityInput.value = quantity;
+					updateModalTotal();
+				}
+			});
+
+			decreaseQuantityBtn.addEventListener("click", () => {
+				let quantity = parseInt(quantityInput.value);
+				if (quantity > 1) {
+					quantity--;
+					quantityInput.value = quantity;
+					updateModalTotal();
+				}
+			});
+
+			// Evento para añadir al carrito (NUEVO)
+			addToCartBtn.addEventListener("click", () => {
+				const quantity = parseInt(quantityInput.value);
+				if (
+					!currentProduct ||
+					quantity <= 0 ||
+					quantity > currentProduct.Stock
+				) {
+					alert("Cantidad inválida o stock insuficiente.");
+					return;
+				}
+
+				// Verificar si el producto ya está en el carrito
+				const existingItemIndex = carrito.findIndex(
+					(item) => item.ID_Producto === currentProduct.ID_Productos
+				);
+
+				if (existingItemIndex > -1) {
+					// Si ya existe, actualiza la cantidad
+					const newQuantity =
+						carrito[existingItemIndex].Cantidad + quantity;
+					if (newQuantity > currentProduct.Stock) {
+						alert(
+							`No puedes añadir más de ${
+								currentProduct.Stock -
+								carrito[existingItemIndex].Cantidad
+							} unidades adicionales de este producto. Stock actual en carrito: ${
+								carrito[existingItemIndex].Cantidad
+							}`
+						);
+						return;
+					}
+					carrito[existingItemIndex].Cantidad = newQuantity;
+				} else {
+					// Si no existe, añade un nuevo ítem
+					const itemToAdd = {
+						ID_Producto: currentProduct.ID_Productos,
+						NombreProducto: currentProduct.NombreProducto,
+						ImagenURL: currentProduct.ImagenURL,
+						Cantidad: quantity,
+						PrecioUnitario: currentProduct.Precio, // Precio original
+						DescuentoAplicado: currentProduct.Descuento,
+						PrecioFinalPorUnidad:
+							currentProduct.Precio *
+							(1 - currentProduct.Descuento / 100), // Precio final por unidad
+					};
+					carrito.push(itemToAdd);
+				}
+
+				alert(
+					`${quantity} unidad(es) de ${currentProduct.NombreProducto} añadidas al carrito.`
+				);
+				productDetailsModal.hide();
+				updateCartDisplay();
+			});
+
+			// Función para actualizar la visualización del carrito (NUEVO)
+			function updateCartDisplay() {
+				cartList.innerHTML = "";
+				let totalCarrito = 0;
+
+				if (carrito.length === 0) {
+					cartList.innerHTML = `<li class="list-group-item" style="background-color: var(--secondary-bg); color: var(--text-color-dark);">No hay productos en el carrito.</li>`;
+					cartItemCountSpan.textContent = "0";
+					cartTotalSpan.textContent = "$0.00";
+					checkoutBtn.disabled = true;
+					clearCartBtn.disabled = true;
+					return;
+				}
+
+				carrito.forEach((item, index) => {
+					const listItem = document.createElement("li");
+					listItem.className =
+						"list-group-item d-flex justify-content-between align-items-center";
+					listItem.style.backgroundColor = "var(--secondary-bg)";
+					listItem.style.color = "var(--text-color-dark)";
+
+					const itemTotal = item.PrecioFinalPorUnidad * item.Cantidad;
+					totalCarrito += itemTotal;
+
+					listItem.innerHTML = `
+			                     <img src="${item.ImagenURL}" alt="${
+						item.NombreProducto
+					}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;" class="me-2">
+			                     <span>${item.NombreProducto} (x${item.Cantidad})</span>
+			                     <div>
+			                         <span class="fw-bold">$${itemTotal.toFixed(2)}</span>
+			                         <button class="btn btn-sm btn-danger ms-3 remove-from-cart-btn" data-index="${index}">X</button>
+			                     </div>
+			                 `;
+					cartList.appendChild(listItem);
+				});
+
+				cartItemCountSpan.textContent = carrito.reduce(
+					(sum, item) => sum + item.Cantidad,
+					0
+				);
+				cartTotalSpan.textContent = `$${totalCarrito.toFixed(2)}`;
+				checkoutBtn.disabled = false;
+				clearCartBtn.disabled = false;
+
+				// Añadir eventos a los botones de eliminar del carrito
+				cartList
+					.querySelectorAll(".remove-from-cart-btn")
+					.forEach((button) => {
+						button.addEventListener("click", (event) => {
+							const index = parseInt(event.target.dataset.index);
+							carrito.splice(index, 1); // Elimina el elemento del array
+							updateCartDisplay(); // Actualiza la vista del carrito
+						});
+					});
+			}
+
+			// Vaciar carrito (NUEVO)
+			clearCartBtn.addEventListener("click", () => {
+				if (
+					confirm("¿Estás seguro de que quieres vaciar el carrito?")
+				) {
+					carrito = [];
+					updateCartDisplay();
+				}
+			});
+
+			// Finalizar Compra (NUEVO - Envía al backend)
+			checkoutBtn.addEventListener("click", async () => {
+				if (carrito.length === 0) {
+					alert(
+						"El carrito está vacío. Añade productos para finalizar la compra."
+					);
+					return;
+				}
+
+				if (
+					!confirm(
+						"¿Estás seguro de que quieres finalizar la compra?"
+					)
+				) {
+					return;
+				}
+
+				const totalCompra = parseFloat(
+					cartTotalSpan.textContent.replace("$", "")
+				);
+				const productosParaEnviar = carrito.map((item) => ({
+					ID_Producto: item.ID_Producto,
+					Cantidad: item.Cantidad,
+					PrecioUnitario: item.PrecioUnitario, // Precio original
+					DescuentoAplicado: item.DescuentoAplicado,
+				}));
+
+				try {
+					const response = await fetch(API_COMPRAS_URL, {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							productosComprados: productosParaEnviar,
+							totalCompra: totalCompra,
+							metodoPago: "Online", // Puedes añadir una opción para que el usuario elija
+						}),
+					});
+
+					const result = await response.json();
+
+					if (response.ok) {
+						alert(
+							`¡Compra realizada con éxito! Orden #${result.orderId}. Revisa "Mis Compras" para ver los detalles.`
+						);
+						carrito = []; // Vaciar el carrito después de la compra exitosa
+						updateCartDisplay(); // Actualizar la vista del carrito
+						// El socket del servidor ya emitirá productosActualizados y ordenesActualizadas
+					} else {
+						alert(
+							`Error al procesar la compra: ${
+								result.message ||
+								result.error ||
+								response.statusText
+							}`
+						);
+					}
+				} catch (error) {
+					console.error("Error al finalizar la compra:", error);
+					alert(
+						"Hubo un error de conexión al intentar finalizar la compra."
+					);
+				}
+			});
+
+			// Cargar productos y actualizar carrito al iniciar la página
+			document.addEventListener("DOMContentLoaded", () => {
+				cargarProductos();
+				updateCartDisplay(); // Inicializar el display del carrito
+			});
+		</script>
+	</body>
+</html>

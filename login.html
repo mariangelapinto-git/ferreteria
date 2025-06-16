@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Iniciar Sesión</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="icon" href="/img/martillo-y-llave.png" />
+		<style>
+			body {
+				background-color: #343a40; /* Fondo oscuro de Bootstrap */
+				color: #f8f9fa; /* Texto claro */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				padding: 20px;
+			}
+			.login-container {
+				background-color: #212529; /* Fondo más oscuro para el contenedor del formulario */
+				padding: 30px;
+				border-radius: 8px;
+				box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+				width: 100%;
+				max-width: 400px;
+			}
+			.login-container h2 {
+				color: #ffc107; /* Color de acento para el título */
+				margin-bottom: 25px;
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="login-container">
+			<h2 class="mb-4">Iniciar Sesión</h2>
+			<form id="loginForm">
+				<div class="mb-3">
+					<label for="email" class="form-label"
+						>Correo Electrónico</label
+					>
+					<input
+						type="email"
+						class="form-control"
+						id="email"
+						name="email"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="password" class="form-label">Contraseña</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						name="password"
+						required
+					/>
+				</div>
+				<div class="d-grid">
+					<button type="submit" class="btn btn-warning">
+						Iniciar Sesión
+					</button>
+				</div>
+				<div class="mt-3 text-center">
+					¿No tienes una cuenta?
+					<a href="/Registro.html">Regístrate aquí</a>
+				
+			</form>
+		</div>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script>
+			document
+				.getElementById("loginForm")
+				.addEventListener("submit", function (event) {
+					event.preventDefault(); // Evita el envío tradicional del formulario
+
+					const email = document.getElementById("email").value;
+					const password = document.getElementById("password").value;
+
+					// Obtener usuarios del localStorage
+					const users =
+						JSON.parse(localStorage.getItem("users")) || [];
+
+					// Buscar el usuario por email y contraseña
+					const foundUser = users.find(
+						(user) =>
+							user.email === email && user.password === password
+					);
+
+					if (foundUser) {
+						// Si el usuario existe y la contraseña coincide
+						alert("Inicio de sesión exitoso. ¡Bienvenido!");
+
+						// Guardar el usuario logueado en sessionStorage (más seguro que localStorage para sesiones)
+						sessionStorage.setItem(
+							"loggedInUser",
+							JSON.stringify(foundUser)
+						);
+
+						// Redirigir al dashboard del usuario
+						window.location.href = "/dashboardUsuario.html"; // Changed to relative path
+					} else {
+						alert(
+							"Email o contraseña incorrectos. Inténtalo de nuevo."
+						);
+					}
+				});
+		</script>
+	</body>
+</html>

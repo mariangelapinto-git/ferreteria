@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Regístrate</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link
+			rel="icon"
+			href="/public/img/martillo-y-llave.png"
+			type="image/x-icon"
+		/>
+		<style>
+			body {
+				background-color: #343a40; /* Fondo oscuro de Bootstrap */
+				color: #f8f9fa; /* Texto claro */
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				padding: 20px;
+			}
+			.register-container {
+				background-color: #212529; /* Fondo más oscuro para el contenedor del formulario */
+				padding: 30px;
+				border-radius: 8px;
+				box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+				width: 100%;
+				max-width: 500px;
+			}
+			.register-container h2 {
+				color: #ffc107; /* Color de acento para el título */
+				margin-bottom: 25px;
+				text-align: center;
+			}
+			.form-label {
+				color: #dee2e6;
+			}
+			.btn-primary {
+				background-color: #ffc107;
+				border-color: #ffc107;
+				color: #212529;
+			}
+			.btn-primary:hover {
+				background-color: #e0a800;
+				border-color: #e0a800;
+			}
+			.btn-secondary {
+				background-color: #6c757d;
+				border-color: #6c757d;
+			}
+			.btn-secondary:hover {
+				background-color: #5a6268;
+				border-color: #545b62;
+			}
+			.mt-3 a {
+				color: #ffc107;
+				text-decoration: none;
+			}
+			.mt-3 a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="register-container">
+			<h2 class="mb-4">Crear Cuenta</h2>
+			<form id="registroForm">
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label for="nombre" class="form-label">Nombre</label>
+						<input
+							type="text"
+							class="form-control"
+							id="nombre"
+							required
+						/>
+					</div>
+					<div class="col-md-6">
+						<label for="apellido" class="form-label"
+							>Apellido</label
+						>
+						<input
+							type="text"
+							class="form-control"
+							id="apellido"
+							required
+						/>
+					</div>
+				</div>
+				<div class="mb-3">
+					<label for="cedula" class="form-label">Cédula</label>
+					<input
+						type="text"
+						class="form-control"
+						id="cedula"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="email" class="form-label">Email</label>
+					<input
+						type="email"
+						class="form-control"
+						id="email"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="password" class="form-label">Contraseña</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password"
+						required
+					/>
+				</div>
+				<div class="mb-3">
+					<label for="confirmPassword" class="form-label"
+						>Confirmar Contraseña</label
+					>
+					<input
+						type="password"
+						class="form-control"
+						id="confirmPassword"
+						required
+					/>
+				</div>
+				<div class="d-grid gap-2 mt-4">
+					<button type="submit" class="btn btn-primary">
+						Registrarse
+					</button>
+					<button type="reset" class="btn btn-secondary">
+						Limpiar
+					</button>
+				</div>
+				<div class="mt-3 text-center">
+					¿Ya tienes una cuenta?
+					<a href="/login.html">Inicia sesión aquí</a>
+				</div>
+			</form>
+		</div>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script>
+			document
+				.getElementById("registroForm")
+				.addEventListener("submit", function (event) {
+					event.preventDefault(); // Evita el envío tradicional del formulario
+
+					const nombre = document.getElementById("nombre").value;
+					const apellido = document.getElementById("apellido").value;
+					const cedula = document.getElementById("cedula").value;
+					const email = document.getElementById("email").value;
+					const password = document.getElementById("password").value;
+					const confirmPassword =
+						document.getElementById("confirmPassword").value;
+
+					if (password !== confirmPassword) {
+						alert(
+							"Las contraseñas no coinciden. Por favor, inténtalo de nuevo."
+						);
+						return;
+					}
+
+					// Obtener usuarios existentes de localStorage
+					let users = JSON.parse(localStorage.getItem("users")) || [];
+
+					// Generar un nuevo ID de usuario
+					let newUserId =
+						users.length > 0
+							? Math.max(...users.map((u) => u.id)) + 1
+							: 1;
+
+					// Crear el nuevo objeto de usuario con la contraseña en texto plano
+					const newUser = {
+						id: newUserId,
+						nombre: nombre,
+						apellido: apellido,
+						cedula: cedula,
+						email: email,
+						password: password, // ¡ATENCIÓN! Contraseña guardada en texto plano. En una app real, esto NO es seguro.
+					};
+
+					// Añadir el nuevo usuario a la lista
+					users.push(newUser);
+
+					// Guardar la lista actualizada en localStorage
+					localStorage.setItem("users", JSON.stringify(users));
+
+					alert(
+						"¡Registro exitoso! Ahora puedes verificar en el panel de administración o iniciar sesión."
+					);
+					window.location.href = "/login.html"; // Redirige a tu página de login
+				});
+		</script>
+	</body>
+</html>

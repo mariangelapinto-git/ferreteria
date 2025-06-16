@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mi Dashboard</title>
+		<link rel="stylesheet" href="./css/bootstrap.min.css" />
+		<link rel="icon" href="/img/martillo-y-llave.png" />
+		<style>
+			body {
+				background-color: #343a40; /* Fondo oscuro de Bootstrap */
+				color: #f8f9fa; /* Texto claro */
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+			.navbar {
+				background-color: #212529; /* Navbar oscuro */
+			}
+			.main-content {
+				flex-grow: 1; /* Ocupa el espacio restante */
+				padding: 20px;
+			}
+			.section-card {
+				background-color: #212529;
+				padding: 25px;
+				border-radius: 8px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+				margin-bottom: 20px;
+			}
+			.section-card h3 {
+				color: #ffc107;
+				margin-bottom: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-lg">
+			<div class="container-fluid">
+				<a class="navbar-brand text-light" href="#">Mi perfil</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a
+								class="nav-link text-light"
+								href="./productos.html"
+								>Ver Productos</a
+							>
+						</li>
+						<li class="nav-item">
+							<a
+								class="nav-link text-light"
+								href="#"
+								id="logoutButton"
+								>Cerrar Sesión</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<main class="main-content container-fluid">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="section-card">
+						<h3>Mis Datos Personales</h3>
+						<p>
+							<strong>Nombre:</strong>
+							<span id="userDataNombre"></span>
+						</p>
+						<p>
+							<strong>Apellido:</strong>
+							<span id="userDataApellido"></span>
+						</p>
+						<p>
+							<strong>Cédula:</strong>
+							<span id="userDataCedula"></span>
+						</p>
+						<p>
+							<strong>Email:</strong>
+							<span id="userDataEmail"></span>
+						</p>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="section-card">
+						<h3>Historial de Órdenes</h3>
+						<div
+							class="alert alert-info text-center d-none"
+							role="alert"
+							id="noOrdersMessage"
+						>
+							No tienes órdenes realizadas aún.
+						</div>
+						<div class="table-responsive">
+							<table class="table table-dark table-striped">
+								<thead>
+									<tr>
+										<th>ID Orden</th>
+										<th>Fecha</th>
+										<th>Total</th>
+										<th>Estado</th>
+										<th>Productos</th>
+									</tr>
+								</thead>
+								<tbody id="ordersHistoryTableBody"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<script src="./js/bootstrap.bundle.min.js"></script>
+		<script>
+			let loggedInUser = null;
+
+			document.addEventListener("DOMContentLoaded", () => {
+				// Cargar el usuario desde sessionStorage
+				const storedUser = sessionStorage.getItem("loggedInUser");
+				if (storedUser) {
+					loggedInUser = JSON.parse(storedUser);
+					renderUserData();
+					renderUserOrders();
+				} else {
+					// Si no hay usuario logueado, redirigir a la página de inicio de sesión
+					alert(
+						"No has iniciado sesión. Por favor, inicia sesión para acceder a tu dashboard."
+					);
+					window.location.href = "./login.html"; // Changed to relative path
+				}
+
+				document
+					.getElementById("logoutButton")
+					.addEventListener("click", () => {
+						sessionStorage.removeItem("loggedInUser"); // Limpiar la sesión
+						alert("Has cerrado sesión.");
+						window.location.href = "./login.html"; // Redirigir al login
+					});
+			});
+
+			function renderUserData() {
+				if (loggedInUser) {
+					document.getElementById("userDataNombre").textContent =
+						loggedInUser.nombre;
+					document.getElementById("userDataApellido").textContent =
+						loggedInUser.apellido;
+					document.getElementById("userDataCedula").textContent =
+						loggedInUser.cedula;
+					document.getElementById("userDataEmail").textContent =
+						loggedInUser.email;
+					// No se recomienda mostrar la contraseña en texto plano en una aplicación real.
+					// document.getElementById("userDataPassword").textContent = loggedInUser.password;
+				}
+			}
+
+			function renderUserOrders() {
+				const orders =
+					JSON.parse(localStorage.getItem("ordenes")) || [];
+				const userOrders = orders.filter(
+					(order) => order.userId === loggedInUser.id
+				);
+				const tbody = document.getElementById("ordersHistoryTableBody");
+				tbody.innerHTML = "";
+				const noOrdersMessage =
+					document.getElementById("noOrdersMessage");
+
+				if (userOrders.length === 0) {
+					noOrdersMessage.classList.remove("d-none");
+				} else {
+					noOrdersMessage.classList.add("d-none");
+					userOrders.forEach((order) => {
+						const productsList = order.products
+							.map((p) => `${p.name} (x${p.quantity})`)
+							.join(", ");
+						tbody.innerHTML += `
+                            <tr>
+                                <td>${order.id}</td>
+                                <td>${new Date(
+									order.date
+								).toLocaleDateString()}</td>
+                                <td>$${order.total.toFixed(2)}</td>
+                                <td>${order.status}</td>
+                                <td>${productsList}</td>
+                            </tr>
+                        `;
+					});
+				}
+			}
+		</script>
+	</body>
+</html>
